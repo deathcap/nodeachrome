@@ -1,0 +1,14 @@
+{
+    "manifest_version": 2,
+    "name": "Nodeachrome",
+    "version": "0.0.1",
+    "description": "Nodeachrome",
+    "app": {
+        "background": {
+            "scripts": [ "background.js" ]
+        }
+    },
+    "permissions": [
+        "nativeMessaging"
+    ]
+}
