@@ -17,6 +17,15 @@ process.stdin
   .pipe(output)
   .pipe(process.stdout);
 
+function encodeError(err) {
+  return {error:
+            {
+              code: err.errno, // must be an integer, but err.code is a string like 'ENOENT'
+              message: err.toString(),
+            }
+          };
+}
+
 function messageHandler(msg, push, done) {
   const method = msg.method;
   const params = msg.params;
@@ -31,12 +40,7 @@ function messageHandler(msg, push, done) {
       //const callback = params[1];
       fs.readFile(file, (err, data) => {
         if (err) {
-          push({error:
-            {
-              code: err.errno, // must be an integer, but err.code is a string like 'ENOENT'
-              message: err.toString(),
-            }
-          });
+          push(encodeError(err));
         } else {
           push({result:data});
         }
@@ -47,12 +51,7 @@ function messageHandler(msg, push, done) {
       //const callback = params[2];
       fs.readFile(file, options, (err, data) => {
         if (err) {
-          push({error:
-            {
-              code: err.errno, // must be an integer, but err.code is a string like 'ENOENT'
-              message: err.toString(),
-            }
-          });
+          push(encodeError(err));
         } else {
           push({result:data});
         }
