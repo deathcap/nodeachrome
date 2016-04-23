@@ -30,21 +30,41 @@ function messageHandler(msg, push, done) {
     if (params.length < 2) {
       //const callback = params[1];
       fs.readFile(file, (err, data) => {
-        if (err) throw err; // TODO
-        push(data);
+        if (err) {
+          push({error:
+            {
+              code: err.errno, // must be an integer, but err.code is a string like 'ENOENT'
+              message: err.toString(),
+            }
+          });
+        } else {
+          push({result:data});
+        }
         done();
       });
     } else {
       const options = params[1];
       //const callback = params[2];
       fs.readFile(file, options, (err, data) => {
-        if (err) throw err; // TODO
-        push(data);
+        if (err) {
+          push({error:
+            {
+              code: err.errno, // must be an integer, but err.code is a string like 'ENOENT'
+              message: err.toString(),
+            }
+          });
+        } else {
+          push({result:data});
+        }
         done();
       });
     }
   } else {
-    push({error: `invalid method: ${method}`});
+    push({error: {
+      code: -32601, // defined in http://www.jsonrpc.org/specification#response_object
+      message: 'Method not found',
+      data: `invalid method: ${method}`}
+    });
     done();
   }
 }
