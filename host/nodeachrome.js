@@ -34,41 +34,36 @@ function encodeResult(err, data) {
   }
 }
 
-function createCallback(push, done) {
-  function genericCallback(err, data) {
-    push(encodeResult(err, data));
-    done();
-  }
-
-  return genericCallback;
-}
-
 function messageHandler(msg, push, done) {
   const method = msg.method;
   const params = msg.params;
 
+  function cb(err, data) {
+    push(encodeResult(err, data));
+    done();
+  }
+
   if (method === 'echo') {
     push(msg);
     done();
-    /* TODO
   } else if (method === 'fs.access') {
     const path = params[0];
     if (params.length < 2) {
-      fs.access(path, (err) => {
-
-      });
-
-*/
+      fs.access(path, cb);
+    } else {
+      const mode = params[1];
+      fs.access(path, mode, cb);
+    }
   } else if (method === 'fs.readFile') {
     const path = params[0];
     // TODO: restrict access to only a limited set of files
     if (params.length < 2) {
       //const callback = params[1];
-      fs.readFile(path, createCallback(push, done));
+      fs.readFile(path, cb);
     } else {
       const options = params[1];
       //const callback = params[2];
-      fs.readFile(path, options, createCallback(push, done));
+      fs.readFile(path, options, cb);
     }
   } else {
     push({error: {
