@@ -1,0 +1,46 @@
+"Nodeachrome"
+node4chrome
+node2chrome
+nodeNchrome
+...
+
+Browserify-based development process, two isolated JavaScript environments:
+1) Node.js (V8) on operating system, to run `browserify` tool, command-line tests, install/download modules from NPM, etc.
+2) Web browser environment, e.g. Google Chrome (also V8! but maybe different version, newer/older), converted via browserify, sandboxed
+
+concept: run Node.js scripts in Chrome, so there is the same JavaScript environment for both usages
+
+implementation idea: as a Chrome browser extension
+APIs to implement in Nodeachrome:
+https://nodejs.org/api/index.html
+
+https://nodejs.org/api/fs.html filesystem access
+- within a 'sandbox' only, local files only for JS development, packages
+- can Chrome extensions even read arbitrary local files? need to determine the capabilities of extensions here
+https://developer.chrome.com/extensions/api_index
+https://developer.chrome.com/extensions/fileSystemProvider but only on "Chrome OS"
+http://stackoverflow.com/questions/14286197/reading-and-writing-files-in-chrome-extensions
+http://stackoverflow.com/questions/5429513/writing-to-local-file-system-in-chrome-extension
+probably just localStorage, the fs shim for web, maybe not real local files, but then how to develop with vim..
+https://www.quora.com/Is-it-possible-to-read-a-local-file-from-a-Chrome-extension?share=1 says native code
+https://developer.chrome.com/extensions/npapi NPAPI being phased out "unrestricted access to local machine"
+what are the alternatives? http://blog.chromium.org/2013/09/saying-goodbye-to-our-old-friend-npapi.html
+"In cases where standard web technologies are not yet sufficient, developers and administrators can use:"
+NaCl https://developers.google.com/native-client/ - sandboxed native code
+Apps http://developer.chrome.com/apps/ - HTML, CSS, JS deliver similar to a native application, packaged Chrome apps
+Legacy Browser Support https://support.google.com/chrome/a/answer/3019558?hl=en
+Native Messaging API http://developer.chrome.com/extensions/messaging.html#native-messaging
+ this is promising - https://developer.chrome.com/extensions/nativeMessaging
+ for initial prototype, could use Node.js app as native host: https://www.npmjs.com/package/chrome-native-messaging
+
+https://nodejs.org/api/http.html https://nodejs.org/api/https.html https://nodejs.org/api/net.html https://nodejs.org/api/dns.html network
+- only for whitelisted scripts and only whitelisted domains, npm for npm registry access, e.g. https://github.com/deathcap/webnpm
+https://nodejs.org/api/buffer.html
+- and others, use browserified versions
+https://nodejs.org/api/process.html
+- argv, pass from to allow command-line utilities. 
+ ./nodeachrome or something command-line interface, make it easy and familiar for developers
+
+Chrome extension development - samples https://developer.chrome.com/extensions/samples action?
+
+
