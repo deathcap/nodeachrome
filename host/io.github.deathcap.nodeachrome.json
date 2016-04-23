@@ -1,0 +1,9 @@
+{
+    "name": "io.github.deathcap.nodeachrome",
+    "description": "Nodeachrome",
+    "path": "/Users/admin/games/voxeljs/nodeachrome/host/nodeachrome.js",
+    "type": "stdio",
+    "allowed_origins": [
+        "chrome-extension://ldcjdgpgjjhmjomfiekbmeogiamokiec/"
+    ]
+}
