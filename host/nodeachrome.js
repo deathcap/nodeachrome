@@ -34,6 +34,15 @@ function encodeResult(err, data) {
   }
 }
 
+function createCallback(push, done) {
+  function genericCallback(err, data) {
+    push(encodeResult(err, data));
+    done();
+  }
+
+  return genericCallback;
+}
+
 function messageHandler(msg, push, done) {
   const method = msg.method;
   const params = msg.params;
@@ -55,17 +64,11 @@ function messageHandler(msg, push, done) {
     // TODO: restrict access to only a limited set of files
     if (params.length < 2) {
       //const callback = params[1];
-      fs.readFile(path, (err, data) => {
-        push(encodeResult(err, data));
-        done();
-      });
+      fs.readFile(path, createCallback(push, done));
     } else {
       const options = params[1];
       //const callback = params[2];
-      fs.readFile(path, options, (err, data) => {
-        push(encodeResult(err, data));
-        done();
-      });
+      fs.readFile(path, options, createCallback(push, done));
     }
   } else {
     push({error: {
