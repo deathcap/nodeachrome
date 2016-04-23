@@ -26,6 +26,14 @@ function encodeError(err) {
           };
 }
 
+function encodeResult(err, data) {
+  if (err) {
+    return encodeError(err);
+  } else {
+    return {result:data};
+  }
+}
+
 function messageHandler(msg, push, done) {
   const method = msg.method;
   const params = msg.params;
@@ -33,28 +41,29 @@ function messageHandler(msg, push, done) {
   if (method === 'echo') {
     push(msg);
     done();
+    /* TODO
+  } else if (method === 'fs.access') {
+    const path = params[0];
+    if (params.length < 2) {
+      fs.access(path, (err) => {
+
+      });
+
+*/
   } else if (method === 'fs.readFile') {
-    const file = params[0];
+    const path = params[0];
     // TODO: restrict access to only a limited set of files
     if (params.length < 2) {
       //const callback = params[1];
-      fs.readFile(file, (err, data) => {
-        if (err) {
-          push(encodeError(err));
-        } else {
-          push({result:data});
-        }
+      fs.readFile(path, (err, data) => {
+        push(encodeResult(err, data));
         done();
       });
     } else {
       const options = params[1];
       //const callback = params[2];
-      fs.readFile(file, options, (err, data) => {
-        if (err) {
-          push(encodeError(err));
-        } else {
-          push({result:data});
-        }
+      fs.readFile(path, options, (err, data) => {
+        push(encodeResult(err, data));
         done();
       });
     }

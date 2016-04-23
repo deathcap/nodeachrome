@@ -50,3 +50,6 @@ function log(msg) {
   e.appendChild(document.createTextNode(typeof msg === 'object' ? JSON.stringify(msg) : msg));
   document.getElementById('log').appendChild(e);
 }
+
+let fs = {};
+fs.access;
