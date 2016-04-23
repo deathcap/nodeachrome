@@ -16,7 +16,7 @@ document.getElementById('connect').addEventListener('click', () => {
 
 document.getElementById('disconnect').addEventListener('click', () => {
   log('port.disconnect');
-  port.disconnct();
+  port.disconnect();
   port = null;
 });
 

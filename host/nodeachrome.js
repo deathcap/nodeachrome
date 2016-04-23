@@ -5,6 +5,7 @@
 'use strict';
 
 const process = require('process');
+const fs = require('fs');
 const nativeMessage = require('chrome-native-messaging');
 const input = new nativeMessage.Input();
 const transform = new nativeMessage.Transform(messageHandler);
@@ -17,6 +18,33 @@ process.stdin
   .pipe(process.stdout);
 
 function messageHandler(msg, push, done) {
-  push(msg); // echo
-  done();
+  const method = msg.method;
+  const params = msg.params;
+
+  if (method === 'echo') {
+    push(msg);
+    done();
+  } else if (method === 'fs.readFile') {
+    const file = params[0];
+    // TODO: restrict access to only a limited set of files
+    if (params.length < 2) {
+      //const callback = params[1];
+      fs.readFile(file, (err, data) => {
+        if (err) throw err; // TODO
+        push(data);
+        done();
+      });
+    } else {
+      const options = params[1];
+      //const callback = params[2];
+      fs.readFile(file, options, (err, data) => {
+        if (err) throw err; // TODO
+        push(data);
+        done();
+      });
+    }
+  } else {
+    push({error: `invalid method: ${method}`});
+    done();
+  }
 }
