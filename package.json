@@ -7,9 +7,9 @@
     "type": "git",
     "url": "git@github.com:deathcap/nodeachrome.git"
   },
-  "keywords": [
-  ],
+  "keywords": [],
   "dependencies": {
+    "chrome-native-messaging": "^0.2.0"
   },
   "license": "MIT"
 }
