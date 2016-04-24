@@ -56,11 +56,9 @@ fs.readFile = (path, options, cb) => {
 
   function decodeBuffer(err, data) {
     // Node.js Buffer objects come over as {type:'Buffer',data:[...]} TODO: more generic serialization protocol
-    if (typeof data === 'object') {
-      if (data.type === 'Buffer') {
-        const buffer = new Buffer(data.data);
-        cb(err, buffer);
-      }
+    if (typeof data === 'object' && data.type === 'Buffer') {
+      const buffer = new Buffer(data.data);
+      cb(err, buffer);
     } else {
       cb(err, data);
     }
