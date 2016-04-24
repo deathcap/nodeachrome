@@ -11,7 +11,9 @@
     "start": "node compile.js > bundle.js"
   },
   "keywords": [],
-  "dependencies": {},
+  "dependencies": {
+    "shellasync": "^1.0.0"
+  },
   "license": "MIT",
   "devDependencies": {
     "browserify": "^13.0.0"
