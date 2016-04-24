@@ -35,6 +35,23 @@ module.exports = (function (argv) { // wrapper in case we're in module_context m
   var types = configDefs.types
   var nopt = require('./node_modules/npm/node_modules/nopt')
 
+  // for reasons I'm not entirely clear with, the process.stderr browser-stdout stream https://github.com/kumavis/browser-stdout/
+  // although derives from Writable, does not pass the instanceof check for Stream, at least in the browser:
+  // > g.process.stdout instanceof g.require('stream').Stream
+  // false
+  // > g.process.stdout instanceof g.require('stream').Writable
+  // true
+  //
+  // This fails nopt npm configuration validation in the default 'logstream' option, set to process.stderr
+  // Overwrite it to allow Writable too
+  const stream = require('stream');
+  nopt.typeDefs.Stream.validate = (data, k, val) => {
+    // based on https://github.com/npm/nopt/blob/8900f8e3f039d5131c600700994e51f7b312c5fe/lib/nopt.js#L169-L172
+    // added WritableStream check
+    if (!(val instanceof stream.Stream) && !(val instanceof stream.Writable)) return false;
+    data[k] = val;
+  };
+
   // if npm is called as "npmg" or "npm_g", then
   // run in global mode.
   if (path.basename(process.argv[1]).slice(-1) === 'g') {
