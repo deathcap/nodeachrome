@@ -1,6 +1,7 @@
 'use strict';
 
 require('shellasync/global'); // export some useful shell-like functions: cat(), ls(), ... using node.js fs async APIs
+// https://github.com/npm/npm/blob/master/bin/npm-cli.js
 require('./ui')(); // wire up button event handlers
 require('./more-process');
 
@@ -36,12 +37,7 @@ global.g = {
   // Useful apps
   browserify: require('browserify'),
   npm: require('npm'),
-  /* require() only works once, so instead copy parts of npm-cli
-  npm_cli: function(argv) {
-    process.argv = argv || ['/bin/node', 'npm', 'version'];
-    return require('npm/bin/npm-cli');
-  },
-  */
+  npm_cli: require('./npm-cli'),
   setup_npm: setup_npm,
 };
 
