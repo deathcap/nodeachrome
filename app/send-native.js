@@ -3,7 +3,7 @@
 const application = 'io.github.deathcap.nodeachrome';
 
 function decodeResponse(response, cb) {
-  console.log('decodeResponse',response,cb);
+  console.log('decodeResponse',response);
   if (typeof cb !== 'function') { console.error('??? decodeResponse non-string callback',cb); cb = () => {}; }
   if (!response) return cb(chrome.runtime.lastError);
   if (response.error) return cb(new Error(response.error.message));

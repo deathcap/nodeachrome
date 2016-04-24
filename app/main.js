@@ -68,31 +68,30 @@ global.g = {
   // Useful apps
   browserify: require('browserify'),
   npm: require('npm'),
+  /* require() only works once, so instead copy parts of npm-cli
   npm_cli: function(argv) {
     process.argv = argv || ['/bin/node', 'npm', 'version'];
     return require('npm/bin/npm-cli');
   },
+  */
   setup_npm: setup_npm,
 };
 
 function setup_npm() {
+  process.argv = ['/bin/node', 'npm', 'version'];
+
   // based on https://github.com/deathcap/webnpm/blob/master/webnpm.js
   const config = {
-    // until https://github.com/npm/npm-registry-couchapp/issues/108#issuecomment-73352201 add support for CORS headers
-    // from https://github.com/Rob--W/cors-anywhere/
-    // fails with 'A wildcard '*' cannot be used in the 'Access-Control-Allow-Origin' header when the credentials flag is true.
-    // Origin 'http://localhost:9966' is therefore not allowed access.' withCredentials false, then it works
-    //registry: 'http://cors-anywhere.herokuapp.com/http://registry.npmjs.org',
-    registry: 'http://cors.maxogden.com/http://registry.npmjs.org',
-    // from https://github.com/zeke/npm-registry-cors-proxy, but it does not allow OPTIONS - '404 Not Found Cannot OPTIONS /voxel-engine'
-    //registry: 'http://npm-registry-cors-proxy.herokuapp.com',
+    // manifest.json permissions http[s]://*/ allows full XHR access within the Chrome extension
+    // no need to CORS proxy
+    //registry: 'http://cors.maxogden.com/http://registry.npmjs.org',
 
     // npm.config.get('argv').cooked requires nopt parsing, used by faq and help
     // TODO: call npm-cli https://github.com/deathcap/webnpm/issues/8
-    argv: {cooked: []},
+    argv: {cooked: ['/bin/node']},
   };
 
-  /*
+  const npm = require('npm');
   npm.load(config, (err) => {
     if (err) {
       console.log('npm load failed:',err);
@@ -101,10 +100,8 @@ function setup_npm() {
 
     console.log('WebNPM loaded. Try browserify() or npm.commands.*()');
   });
-  */
 
   const asarray = require('asarray');
-  const npm = require('npm');
 
   // relevant bits for cli
   const nopt = require('./node_modules/npm/node_modules/nopt');
@@ -129,5 +126,6 @@ function setup_npm() {
     // "Callback called more than once." if rerun with another command
   }
 
-  return npm_cli();
+  global.npm_cli = npm_cli;
+  return npm_cli;
 }
