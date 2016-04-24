@@ -4,12 +4,30 @@
 
 'use strict';
 
+// Native messaging host, provides native access to OS functions over stdin/stdout
+// for the Google Chrome extension
+// TODO: port off nodejs?
+
 const process = require('process');
 const fs = require('fs');
+const path = require('path');
 const nativeMessage = require('chrome-native-messaging');
 const input = new nativeMessage.Input();
 const transform = new nativeMessage.Transform(messageHandler);
 const output = new nativeMessage.Output();
+
+// Prepend all paths with this filesystem root
+const ROOT = path.join(__dirname, '../data');
+if (!fs.existsSync(ROOT)) fs.mkdirSync(ROOT);
+
+function fixpath(relativePath) {
+  const newPath = path.join(ROOT, relativePath);
+  if (!newPath.startsWith(ROOT)) {
+    return ROOT; // tried to go above root, return root
+  }
+  return newPath;
+}
+
 
 process.stdin
   .pipe(input)
@@ -47,7 +65,7 @@ function messageHandler(msg, push, done) {
     push(msg);
     done();
   } else if (method === 'fs.access') {
-    const path = params[0];
+    const path = fixpath(params[0]);
     if (params.length < 2) {
       fs.access(path, cb);
     } else {
@@ -55,11 +73,11 @@ function messageHandler(msg, push, done) {
       fs.access(path, mode, cb);
     }
   } else if (method === 'fs.chmod') {
-    const path = params[0];
+    const path = fixpath(params[0]);
     const mode = params[1];
     fs.chmod(path, mode, cb);
   } else if (method === 'fs.chown') {
-    const path = parmas[0];
+    const path = fixpath(params[0]);
     const uid = params[1];
     const gid = params[2];
     fs.chown(path, uid, gid, cb);
@@ -71,16 +89,16 @@ function messageHandler(msg, push, done) {
     const path = params[0];
     */
   } else if (method === 'fs.exists') { // deprecated, by npm uses
-    const path = params[0];
+    const path = fixpath(params[0]);
     fs.exists(path, cb);
   } else if (method === 'fs.fstat') {
     const fd = params[0];
     fs.fstat(fd, cb);
   } else if (method === 'fs.lstat') {
-    const path = params[0];
+    const path = fixpath(params[0]);
     fs.lstat(path, cb);
   } else if (method === 'fs.open') {
-    const path = params[0];
+    const path = fixpath(params[0]);
     const flags = params[1];
     if (params.length < 3) {
       const mode = params[2];
@@ -89,7 +107,7 @@ function messageHandler(msg, push, done) {
       fs.open(path, flags, cb);
     }
   } else if (method === 'fs.readFile') {
-    const file = params[0];
+    const file = fixpath(params[0]);
     // TODO: restrict access to only a limited set of files
     if (params.length < 2) {
       //const callback = params[1];
@@ -100,13 +118,13 @@ function messageHandler(msg, push, done) {
       fs.readFile(file, options, cb);
     }
   } else if (method === 'fs.readdir') {
-    const path = params[0];
+    const path = fixpath(params[0]);
     fs.readdir(path, cb);
   } else if (method === 'fs.readlink') {
-    const path = params[0];
+    const path = fixpath(params[0]);
     fs.readlink(path, cb);
   } else if (method === 'fs.realpath') {
-    const path = params[0];
+    const path = fixpath(params[0]);
     if (params.length < 2) {
       fs.realpath(path, cb);
     } else {
@@ -114,18 +132,18 @@ function messageHandler(msg, push, done) {
       fs.realpath(path, cache, cb);
     }
   } else if (method === 'fs.rename') {
-    const oldPath = params[0];
-    const newPath = params[1];
+    const oldPath = fixpath(params[0]);
+    const newPath = fixpath(params[1]);
     fs.rename(oldPath, newPath, cb);
   } else if (method === 'fs.rmdir') {
-    const path = params[0];
+    const path = fixpath(params[0]);
     fs.rmdir(path, cb);
   } else if (method === 'fs.stat') {
-    const path = params[0];
+    const path = fixpath(params[0]);
     fs.stat(path, cb);
   } else if (method === 'fs.symlink') {
-    const target = params[0];
-    const path = params[1];
+    const target = fixpath(params[0]);
+    const path = fixpath(params[1]);
     if (params.length < 3) {
       fs.symlink(target, path, cb);
     } else {
@@ -133,10 +151,10 @@ function messageHandler(msg, push, done) {
       fs.symlink(target, path, type, cb);
     }
   } else if (method === 'fs.unlink') {
-    const path = params[0];
+    const path = fixpath(params[0]);
     fs.unlink(path, cb);
   } else if (method === 'fs.writeFile') {
-    const file = params[0];
+    const file = fixpath(params[0]);
     const data = params[1];
     if (params.length < 3) {
       fs.writeFile(file, data, cb);
