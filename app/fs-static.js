@@ -71,28 +71,7 @@ const STATIC_FILE_DATA = {
 };
 
 const STATIC_DIR_DATA = {
-  '/node_modules/npm/node_modules/npm-registry-client/lib': [
-    // ls node_modules/npm/node_modules/npm-registry-client/lib|perl -pe'chomp;$_="    \"$_\",\n"'
-    "access.js",
-    "adduser.js",
-    "attempt.js",
-    "authify.js",
-    "deprecate.js",
-    "dist-tags",
-    "fetch.js",
-    "get.js",
-    "initialize.js",
-    "logout.js",
-    "ping.js",
-    "publish.js",
-    "request.js",
-    "star.js",
-    "stars.js",
-    "tag.js",
-    "team.js",
-    "unpublish.js",
-    "whoami.js",
-  ],
+  // path: [ files ]
 };
 
 fs.readFileSync = (file, options) => {
@@ -127,12 +106,9 @@ fs.readdirSync = (path) => {
 };
 
 fs.statSync = (path) => {
-  if (path.startsWith('/node_modules/npm/node_modules/npm-registry-client/lib/')) {
-    return {
-      isFile: () => true,
-      isDirectory: () => false,
-    }
-  }
+  // if any are needed, add here (intentionally left blank)
+
+
   const e = new Error(`no such file or directory, statSync '${path}'`);
   e.errno = -2;
   e.code = 'ENOENT';

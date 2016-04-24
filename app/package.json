@@ -17,6 +17,7 @@
     "browser-stdout": "^1.3.0",
     "browserify": "^13.0.0",
     "npm": "^3.8.7",
+    "npm-registry-client": "deathcap/npm-registry-client#browserify",
     "shellasync": "^2.1.0"
   },
   "license": "MIT"

@@ -16,6 +16,9 @@ builtins.fs = require.resolve('./fs.js');
 // https://github.com/ternjs/acorn/commit/aed55f3881beb1ea26d8622ada9973839b2b7175
 builtins.acorn = require.resolve('acorn');
 
+// npm-registry-client browserify support
+builtins['npm-registry-client'] = require.resolve('npm-registry-client');
+
 fs.readFile(preludePath, 'utf8', (err, prelude) => {
   if (err) throw err;
   const b = browserify('./main.js', {
