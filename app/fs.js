@@ -38,9 +38,21 @@ fs.open = (path, flags, mode, cb) => {
 fs.readFile = (path, options, cb) => {
   if (!cb) {
     cb = options;
-    sendNative('fs.readFile', [path], cb);
+    sendNative('fs.readFile', [path], decodeBuffer);
   } else {
-    sendNative('fs.readFile', [path, options], cb);
+    sendNative('fs.readFile', [path, options], decodeBuffer);
+  }
+
+  function decodeBuffer(err, data) {
+    // Node.js Buffer objects come over as {type:'Buffer',data:[...]} TODO: more generic serialization protocol
+    if (typeof data === 'object') {
+      if (data.type === 'Buffer') {
+        const buffer = new Buffer(data.data);
+        cb(err, buffer);
+      }
+    } else {
+      cb(err, data);
+    }
   }
 };
 
@@ -49,7 +61,7 @@ const STATIC_FILE_DATA = {
 
   // cat ./node_modules/browser-pack/_prelude.js
   // based on https://github.com/substack/browser-pack/blob/01d39894f7168983f66200e727cdaadf881cd39d/prelude.js
-  // TODO: also prelude2.js
+  // TODO: also prelude2.js, will need to add require.resolve addition if self-hosting
   '/node_modules/browser-pack/_prelude.js': new Buffer(`(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})`),
 };
 
