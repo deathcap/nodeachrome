@@ -7,5 +7,5 @@ require('./ui')(); // wire up button event handlers
 global.require = require;
 global.fs = require('fs');
 global.process = require('process');
-//global.npm = require('npm'); // crashes at:   ReadStream.prototype = Object.create(fs$ReadStream.prototype), no fs.ReadStream defined
+global.npm = require('npm'); // crashes at:   ReadStream.prototype = Object.create(fs$ReadStream.prototype), no fs.ReadStream defined
 global.browserify = require('browserify');

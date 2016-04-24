@@ -143,4 +143,14 @@ fs.writeFile = (file, data, options, cb) => {
   }
 };
 
+// TODO
+function ReadStream() {
+}
+
+function WriteStream() {
+}
+
+fs.ReadStream = ReadStream;
+fs.WriteStream = WriteStream;
+
 module.exports = fs;
