@@ -126,4 +126,17 @@ fs.readdirSync = (path) => {
   throw e;
 };
 
+fs.statSync = (path) => {
+  if (path.startsWith('/node_modules/npm/node_modules/npm-registry-client/lib/')) {
+    return {
+      isFile: () => true,
+      isDirectory: () => false,
+    }
+  }
+  const e = new Error(`no such file or directory, statSync '${path}'`);
+  e.errno = -2;
+  e.code = 'ENOENT';
+  throw e;
+};
+
 module.exports = fs;
