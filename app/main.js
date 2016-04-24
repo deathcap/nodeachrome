@@ -4,6 +4,7 @@ require('shellasync/global'); // export some useful shell-like functions: cat(),
 require('./ui')(); // wire up button event handlers
 
 // Expose globally for debugging
+global.require = require;
 global.fs = require('fs');
 global.process = require('process');
 //global.npm = require('npm'); // crashes at:   ReadStream.prototype = Object.create(fs$ReadStream.prototype), no fs.ReadStream defined
