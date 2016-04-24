@@ -11,8 +11,10 @@ const fs = {};
 fs.access = (path, mode, cb) => {
   if (!cb) {
     cb = mode;
+    if (path === '/bin/node') return cb(null); // simulate executable /bin/node
     sendNative('fs.access', [path], cb);
   } else {
+    if (path === '/bin/node') return cb(null);
     sendNative('fs.access', [path, mode], cb);
   }
 };
