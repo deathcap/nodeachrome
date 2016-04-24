@@ -16,7 +16,7 @@
     "asarray": "^0.1.0",
     "browserify": "^13.0.0",
     "npm": "^3.8.7",
-    "shellasync": "^1.0.0"
+    "shellasync": "^2.0.0"
   },
   "license": "MIT"
 }
