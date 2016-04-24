@@ -3,6 +3,8 @@
 // https://nodejs.org/api/process.html
 const process = {};
 
+const Writable = require('stream').Writable;
+
 process.arch = 'wasm';
 process.env = {
   TERM: 'xterm-256color',
@@ -24,5 +26,17 @@ process.versions = {
   chrome: navigator.appVersion.match(/Chrome\/([\d.]+)/)[1],
   // TODO: how can we get v8 version? if at all, from Chrome version? node process.versions has it
 };
+
+process.stdout = Writable();
+process.stdout._write = (chunk, enc, next) => {
+  console.log('OUT',chunk.toString()); // TODO: terminal ansi emulation
+  next();
+};
+process.stderr = Writable();
+process.stderr._write = (chunk, enc, next) => {
+  console.error('ERR',chunk.toString());
+  next();
+};
+// TODO: stdin
 
 module.exports = process;
