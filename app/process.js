@@ -123,7 +123,7 @@ process.versions = {
   // TODO: how can we get v8 version? if at all, from Chrome version? node process.versions has it
 };
 process.version = process.versions.node;
-process.argv = ['npm'];
+process.argv = ['/bin/node'];
 process.cwd = () => {
   return process.env.PWD;
 };
