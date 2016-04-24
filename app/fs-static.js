@@ -6,6 +6,7 @@
 
 const fs = {};
 
+// TODO: write this data to disk too, so it is consistent on the OS filesystem
 const STATIC_FILE_DATA = {
   '/greeting': new Buffer('hello world'),
 
@@ -69,6 +70,31 @@ const STATIC_FILE_DATA = {
 
 };
 
+const STATIC_DIR_DATA = {
+  '/node_modules/npm/node_modules/npm-registry-client/lib': [
+    // ls node_modules/npm/node_modules/npm-registry-client/lib|perl -pe'chomp;$_="    \"$_\",\n"'
+    "access.js",
+    "adduser.js",
+    "attempt.js",
+    "authify.js",
+    "deprecate.js",
+    "dist-tags",
+    "fetch.js",
+    "get.js",
+    "initialize.js",
+    "logout.js",
+    "ping.js",
+    "publish.js",
+    "request.js",
+    "star.js",
+    "stars.js",
+    "tag.js",
+    "team.js",
+    "unpublish.js",
+    "whoami.js",
+  ],
+};
+
 fs.readFileSync = (file, options) => {
   console.log('readFileSync',file,options);
 
@@ -88,6 +114,16 @@ fs.readFileSync = (file, options) => {
   }
 
   return data.toString(encoding);
+};
+
+fs.readdirSync = (path) => {
+  if (path in STATIC_DIR_DATA) {
+    return STATIC_DIR_DATA[path];
+  }
+  const e = new Error(`no such file or directory, readdirSync '${path}'`);
+  e.errno = -2;
+  e.code = 'ENOENT';
+  throw e;
 };
 
 module.exports = fs;
