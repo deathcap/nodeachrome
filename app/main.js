@@ -51,13 +51,19 @@ function log(msg) {
   document.getElementById('log').appendChild(e);
 }
 
+function decodeResponse(response, cb) {
+  if (!response) return cb(chrome.runtime.lastError);
+  if (response.error) return cb(new Error(response.error.message));
+  return cb(null, response.result);
+}
+
+function sendNative(method, params, cb) {
+  const msg = {method: method, params: params};
+  chrome.runtime.sendNativeMessage(application, msg, (response) => decodeResponse(response, cb));
+}
+
 let fs = {};
 fs.readFile = (path, options, cb) => {
   if (!cb) cb = options;
-  const msg = {method: 'fs.readFile', params: [path, options]}; // TODO: 1-argument variation, would like to use arguments, or rest parameters but...
-  chrome.runtime.sendNativeMessage(application, msg, (response) => {
-    if (!response) return cb(chrome.runtime.lastError);
-    if (response.error) return cb(new Error(response.error.message));
-    return cb(null, response.result);
-  });
+  sendNative('fs.readFile', [path, options], cb); // TODO: 1-argument variation, would like to use arguments, or rest parameters but...
 };
