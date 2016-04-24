@@ -99,7 +99,12 @@ function messageHandler(msg, push, done) {
     fs.lstat(path, cb);
   } else if (method === 'fs.mkdir') {
     const path = fixpath(params[0]);
-    fs.mkdir(path, cb);
+    if (params.length < 2) {
+      fs.mkdir(path, cb);
+    } else {
+      const mode = params[1];
+      fs.mkdir(path, mode, cb);
+    }
   } else if (method === 'fs.open') {
     const path = fixpath(params[0]);
     const flags = params[1];

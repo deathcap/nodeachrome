@@ -25,7 +25,14 @@ fs.close = (fd, cb) => sendNative('fs.close', [fd], cb);
 fs.exists = (path, cb) => sendNative('fs.exists', [path], cb);
 fs.fstat = (fd, cb) => sendNative('fs.fstat', [fd], cb);
 fs.lstat = (path, cb) => sendNative('fs.lstat', [path], cb);
-fs.mkdir = (path, cb) => sendNative('fs.mkdir', [path], cb);
+fs.mkdir = (path, mode, cb) => {
+  if (!cb) {
+    cb = mode;
+    sendNative('fs.mkdir', [path], cb);
+  } else {
+    sendNative('fs.mkdir', [path, mode], cb);
+  }
+}
 
 fs.open = (path, flags, mode, cb) => {
   if (!cb) {
