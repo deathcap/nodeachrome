@@ -30,3 +30,13 @@ const BrowserStdout = require('browser-stdout');
 process.stdout = BrowserStdout();
 process.stderr = BrowserStdout({label: 'stderr'}); // TODO: console.error instead of console.log?
 // TODO: stdin
+
+// http://stackoverflow.com/questions/24042861/node-js-what-does-process-binding-mean
+// "This function returns internal module, like require"
+// Undocumented on https://nodejs.org/api/process.html
+// process/browser.js throws an exception, but builtin-modules tries to filter on it
+// Just return an empty dictionary
+process.binding = (module) => {
+  console.log(`process.binding(${module})`);
+  return {};
+};
