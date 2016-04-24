@@ -73,6 +73,7 @@ module.exports = (function (argv) { // wrapper in case we're in module_context m
   // this is how to use npm programmatically:
   conf._exit = true
   npm.load(conf, function (er) {
+    console.log('npm.load: ', er);
     if (er) return errorHandler(er)
     npm.commands[npm.command](npm.argv, errorHandler)
   })
