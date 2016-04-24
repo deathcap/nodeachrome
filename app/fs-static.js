@@ -13,9 +13,60 @@ const STATIC_FILE_DATA = {
   '/node_modules/npm/package.json': new Buffer(JSON.stringify({version: '3.6.0'})),
 
   // cat ./node_modules/browser-pack/_prelude.js
-  // based on https://github.com/substack/browser-pack/blob/01d39894f7168983f66200e727cdaadf881cd39d/prelude.js
-  // TODO: also prelude2.js, will need to add require.resolve addition if self-hosting
-  '/node_modules/browser-pack/_prelude.js': new Buffer(`(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})`),
+  // This should match ./prelude2.js (adds require.resolve addition), if the web-based browserify
+  // is to match the node-based browserify bundle output. TODO: refactor to avoid duplication
+  '/node_modules/browser-pack/_prelude.js': new Buffer(`//based on https://github.com/substack/browser-pack/blob/01d39894f7168983f66200e727cdaadf881cd39d/prelude.js
+// modules are defined as an array
+// [ module function, map of requireuires ]
+//
+// map of requireuires is short require name -> numeric require
+//
+// anything defined in a previous bundle is accessed via the
+// orig method which is the requireuire for previous bundles
+
+(function outer (modules, cache, entry) {
+    // Save the require from previous bundle to this closure if any
+    var previousRequire = typeof require == "function" && require;
+
+    function newRequire(name, jumped){
+        if(!cache[name]) {
+            if(!modules[name]) {
+                // if we cannot find the module within our internal map or
+                // cache jump to the current global require ie. the last bundle
+                // that was added to the page.
+                var currentRequire = typeof require == "function" && require;
+                if (!jumped && currentRequire) return currentRequire(name, true);
+
+                // If there are other bundles on this page the require from the
+                // previous one is saved to 'previousRequire'. Repeat this as
+                // many times as there are bundles until the module is found or
+                // we exhaust the require chain.
+                if (previousRequire) return previousRequire(name, true);
+                var err = new Error('Cannot find module \'' + name + '\'');
+                err.code = 'MODULE_NOT_FOUND';
+                throw err;
+            }
+            var m = cache[name] = {exports:{}};
+            var R = (x) => {
+                var id = modules[name][1][x];
+                return newRequire(id ? id : x);
+            };
+            // https://github.com/deathcap/webnpm/issues/5 Implement require.resolve
+            R.resolve = (module) => {
+                console.log('require.resolve', module);
+                return module;
+            };
+            modules[name][0].call(m.exports, R
+            ,m,m.exports,outer,modules,cache,entry);
+        }
+        return cache[name].exports;
+    }
+    for(var i=0;i<entry.length;i++) newRequire(entry[i]);
+
+    // Override the current require with this new one
+    return newRequire;
+})`),
+
 };
 
 fs.readFileSync = (file, options) => {
