@@ -3,9 +3,52 @@
 require('shellasync/global'); // export some useful shell-like functions: cat(), ls(), ... using node.js fs async APIs
 require('./ui')(); // wire up button event handlers
 
+// Extend the process global with some more functionality
+// https://nodejs.org/api/process.html
+Object.assign(process.env, {
+  TERM: 'xterm-256color',
+  SHELL: '/bin/sh',
+  USER: 'user',
+  LOGNAME: 'user',
+  PATH: '~/.bin/:/usr/bin/:/bin:/usr/sbin:/sbin:/usr/local/bin',
+  PWD: '/',
+  HOME: '/',
+});
+process.exit = (code) => {
+  console.log(`process.exit(${code})`);
+};
+Object.assign(process.versions, {
+  node: '4.2.4', // simulated node.js compatibility level version (optimistic)
+  app: navigator.appVersion,
+  webkit: navigator.appVersion.match(/WebKit\/([\d.]+)/)[1],
+  chrome: navigator.appVersion.match(/Chrome\/([\d.]+)/)[1],
+  // TODO: how can we get v8 version? if at all, from Chrome version? node process.versions has it
+});
+process.version = process.versions.node;
+process.cwd = () => {
+  return process.env.PWD;
+};
+// stdout/stderr
+// TODO: try https://github.com/kumavis/browser-stdout
+const Writable = require('stream').Writable;
+process.stdout = Writable();
+process.stdout._write = (chunk, enc, next) => {
+  console.log('OUT',chunk.toString()); // TODO: terminal ansi emulation
+  next();
+};
+process.stderr = Writable();
+process.stderr._write = (chunk, enc, next) => {
+  console.error('ERR',chunk.toString());
+  next();
+};
+// TODO: stdin
+
+
+
 // Expose globally for debugging
 global.g = {
   require: require,
+  process: process,
 
   // Pull in most implemented from https://github.com/substack/node-browserify/blob/master/lib/builtins.js
   assert: require('assert'),
@@ -30,7 +73,6 @@ global.g = {
   util: require('url'),
   vm: require('vm'),
   zlib: require('zlib'),
-  process: require('process'), // our own ./process.js, is _process
 
   // Useful apps
   browserify: require('browserify'),
