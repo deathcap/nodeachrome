@@ -114,6 +114,8 @@ fs.rmdir = (path, cb) => sendNative('fs.rmdir', [path], cb);
 
 fs.stat = (path, cb) => {
   sendNative('fs.stat', [path], (err, stats) => {
+    if (err) return cb(err);
+
     // see https://github.com/nodejs/node-v0.x-archive/blob/ef4344311e19a4f73c031508252b21712b22fe8a/lib/fs.js#L124-L189
     function checkModeProperty(property) {
       return (stats.mode & constants.S_IFMT) === property;
@@ -126,6 +128,8 @@ fs.stat = (path, cb) => {
     stats.isSymbolicLink = () => checkModeProperty(constants.S_IFLNK);
     stats.isFIFO = () => checkModeProperty(constants.S_IFIFO);
     stats.isSocket = () => checkModeProperty(constants.S_IFSOCK);
+
+    cb(null, stats);
   });
 }
 
