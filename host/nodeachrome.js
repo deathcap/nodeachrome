@@ -17,7 +17,7 @@ const transform = new nativeMessage.Transform(messageHandler);
 const output = new nativeMessage.Output();
 
 // Prepend all paths with this filesystem root
-const ROOT = path.join(__dirname, '../data');
+const ROOT = path.join(__dirname, '../sandbox');
 if (!fs.existsSync(ROOT)) fs.mkdirSync(ROOT);
 
 function fixpath(relativePath) {
