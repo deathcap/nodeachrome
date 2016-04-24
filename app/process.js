@@ -1,6 +1,10 @@
 'use strict';
 
 // https://nodejs.org/api/process.html
+//
+// TODO: refactor with browserify's builtin process?
+// https://github.com/substack/node-browserify/blob/master/lib/builtins.js#L38
+// https://github.com/defunctzombie/node-process/blob/master/browser.js
 const process = {};
 
 const Writable = require('stream').Writable;
@@ -26,6 +30,8 @@ process.versions = {
   chrome: navigator.appVersion.match(/Chrome\/([\d.]+)/)[1],
   // TODO: how can we get v8 version? if at all, from Chrome version? node process.versions has it
 };
+process.version = process.versions.node;
+process.title = 'browser';
 
 process.stdout = Writable();
 process.stdout._write = (chunk, enc, next) => {

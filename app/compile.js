@@ -11,6 +11,7 @@ const preludePath = path.join(__dirname, 'prelude2.js');
 const builtins = require('browserify/lib/builtins');
 builtins.fs = require.resolve('./fs.js');
 builtins.process = require.resolve('./process.js');
+builtins._process = builtins.process; // browserify has its own, recognizes implicit global without require
 
 // force acorn@3 to get fixes for CSP https://github.com/substack/node-detective/issues/52
 // https://github.com/ternjs/acorn/issues/90  https://github.com/substack/node-detective/pull/64
