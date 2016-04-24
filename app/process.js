@@ -108,8 +108,8 @@ process.env = {
   USER: 'user',
   LOGNAME: 'user',
   PATH: '~/.bin/:/usr/bin/:/bin:/usr/sbin:/sbin:/usr/local/bin',
-  PWD: '/Users/user',
-  HOME: '/Users/user',
+  PWD: '/',
+  HOME: '/',
 };
 process.exit = (code) => {
   console.log(`process.exit(${code})`);
