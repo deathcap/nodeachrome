@@ -30,10 +30,17 @@
                 throw err;
             }
             var m = cache[name] = {exports:{}};
-            modules[name][0].call(m.exports, function(x){
+            var R = (x) => {
                 var id = modules[name][1][x];
                 return newRequire(id ? id : x);
-            },m,m.exports,outer,modules,cache,entry);
+            };
+            // https://github.com/deathcap/webnpm/issues/5 Implement require.resolve
+            R.resolve = (module) => {
+                console.log('require.resolve', module);
+                return module;
+            };
+            modules[name][0].call(m.exports, R
+            ,m,m.exports,outer,modules,cache,entry);
         }
         return cache[name].exports;
     }
