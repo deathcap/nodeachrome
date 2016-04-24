@@ -68,6 +68,9 @@ fs.readFile = (path, options, cb) => {
 const STATIC_FILE_DATA = {
   '/greeting': new Buffer('hello world'),
 
+  // npm reads its own version from its package.json
+  '/node_modules/npm/package.json': new Buffer(JSON.stringify({version: '3.6.0'})),
+
   // cat ./node_modules/browser-pack/_prelude.js
   // based on https://github.com/substack/browser-pack/blob/01d39894f7168983f66200e727cdaadf881cd39d/prelude.js
   // TODO: also prelude2.js, will need to add require.resolve addition if self-hosting
