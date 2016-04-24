@@ -101,6 +101,25 @@ fs.readFile = (path, options, cb) => {
   }
 };
 
+const STATIC_FILE_DATA = {
+  '/greeting': 'hello world',
+  // TODO: Buffers (browserified nodejs)
+};
+
+fs.readFileSync = (file, options) => {
+  console.log('readFileSync',file,options);
+
+  const data = STATIC_FILE_DATA[file];
+  if (data === undefined) {
+    const e = new Error(`no such file or directory: ${file}`);
+    e.code = 'ENOENT';
+    e.errno = -2;
+    throw e;
+  }
+
+  return data;
+};
+
 fs.readdir = (path, cb) => sendNative('fs.readdir', [path], cb);
 fs.readlink = (path, cb) => sendNative('fs.readlink', [path], cb);
 fs.realpath = (path, cache, cb) => {
