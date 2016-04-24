@@ -1,0 +1,19 @@
+{
+  "name": "nodeachrome-app",
+  "description": "Chrome extension",
+  "version": "0.0.1",
+  "main": "nodeachrome.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:deathcap/nodeachrome.git"
+  },
+  "scripts": {
+    "start": "node compile.js > bundle.js"
+  },
+  "keywords": [],
+  "dependencies": {},
+  "license": "MIT",
+  "devDependencies": {
+    "browserify": "^13.0.0"
+  }
+}
