@@ -42,6 +42,7 @@ function setup_npm() {
   */
 
   const asarray = require('asarray');
+  const npm = require('npm');
 
   // relevant bits for cli
   const nopt = require('./node_modules/npm/node_modules/nopt');
@@ -51,7 +52,7 @@ function setup_npm() {
   const types = configDefs.types;
   const errorHandler = require('./node_modules/npm/lib/utils/error-handler.js');
 
-  global.npm_cli = function() {
+  function npm_cli() {
     // Call the NPM command-line interface with the given function arguments
     process.argv = asarray(arguments); // for .slice, on Array but not arguments
     //require('npm/cli.js'); // this only works once :( TODO
@@ -64,5 +65,7 @@ function setup_npm() {
     npm.commands[npm.command](npm.argv, errorHandler);
     // TODO: still need to reset some state here..
     // "Callback called more than once." if rerun with another command
-  };
+  }
+
+  return npm_cli();
 }
