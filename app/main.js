@@ -28,19 +28,10 @@ process.version = process.versions.node;
 process.cwd = () => {
   return process.env.PWD;
 };
-// stdout/stderr
-// TODO: try https://github.com/kumavis/browser-stdout
-const Writable = require('stream').Writable;
-process.stdout = Writable();
-process.stdout._write = (chunk, enc, next) => {
-  console.log('OUT',chunk.toString()); // TODO: terminal ansi emulation
-  next();
-};
-process.stderr = Writable();
-process.stderr._write = (chunk, enc, next) => {
-  console.error('ERR',chunk.toString());
-  next();
-};
+process.execPath = '/bin/node';
+const BrowserStdout = require('browser-stdout');
+process.stdout = BrowserStdout();
+process.stderr = BrowserStdout({label: 'stderr'}); // TODO: console.error instead of console.log?
 // TODO: stdin
 
 
