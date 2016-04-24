@@ -97,6 +97,9 @@ function messageHandler(msg, push, done) {
   } else if (method === 'fs.lstat') {
     const path = fixpath(params[0]);
     fs.lstat(path, cb);
+  } else if (method === 'fs.mkdir') {
+    const path = fixpath(params[0]);
+    fs.mkdir(path, cb);
   } else if (method === 'fs.open') {
     const path = fixpath(params[0]);
     const flags = params[1];
