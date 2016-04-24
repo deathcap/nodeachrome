@@ -9,7 +9,7 @@ Object.assign(process.env, {
   LOGNAME: 'user',
   PATH: '~/.bin/:/usr/bin/:/bin:/usr/sbin:/sbin:/usr/local/bin',
   PWD: '/',
-  HOME: '/',
+  HOME: '/home',
 });
 process.exit = (code) => {
   console.log(`process.exit(${code})`);
