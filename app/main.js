@@ -77,6 +77,10 @@ global.g = {
   // Useful apps
   browserify: require('browserify'),
   npm: require('npm'),
+  npm_cli: function(argv) {
+    process.argv = argv || ['/bin/node', 'npm', 'version'];
+    return require('npm/bin/npm-cli');
+  },
   setup_npm: setup_npm,
 };
 
