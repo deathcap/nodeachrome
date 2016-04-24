@@ -1,5 +1,6 @@
 'use strict';
 
+const constants = require('constants');
 const sendNative = require('./send-native');
 
 // https://nodejs.org/api/fs.html
@@ -110,26 +111,18 @@ fs.rmdir = (path, cb) => sendNative('fs.rmdir', [path], cb);
 
 fs.stat = (path, cb) => {
   sendNative('fs.stat', [path], (err, stats) => {
-    const S_IFMT  = 0o170000;
-    const S_IFIFO = 0o010000;
-    const S_IFCHR = 0o020000;
-    const S_IFDIR = 0o040000;
-    const S_IFBLK = 0o060000;
-    const S_IFREG = 0o100000;
-    const S_IFLNK = 0o120000;
-    const S_IFSOCK= 0o140000;
     // see https://github.com/nodejs/node-v0.x-archive/blob/ef4344311e19a4f73c031508252b21712b22fe8a/lib/fs.js#L124-L189
     function checkModeProperty(property) {
-      return (stats.mode & S_IFMT) === property;
+      return (stats.mode & constants.S_IFMT) === property;
     }
 
-    stats.isDirectory = () => checkModeProperty(S_IFDIR);
-    stats.isFile = () => checkModeProperty(S_IFREG);
-    stats.isBlockDevice = () => checkModeProperty(S_IFBLK);
-    stats.isCharacterDevice = () => checkModeProperty(S_IFCHR);
-    stats.isSymbolicLink = () => checkModeProperty(S_IFLNK);
-    stats.isFIFO = () => checkModeProperty(S_IFIFO);
-    stats.isSocket = () => checkModeProperty(S_IFSOCK);
+    stats.isDirectory = () => checkModeProperty(constants.S_IFDIR);
+    stats.isFile = () => checkModeProperty(constants.S_IFREG);
+    stats.isBlockDevice = () => checkModeProperty(constants.S_IFBLK);
+    stats.isCharacterDevice = () => checkModeProperty(constants.S_IFCHR);
+    stats.isSymbolicLink = () => checkModeProperty(constants.S_IFLNK);
+    stats.isFIFO = () => checkModeProperty(constants.S_IFIFO);
+    stats.isSocket = () => checkModeProperty(constants.S_IFSOCK);
   });
 }
 
