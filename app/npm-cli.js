@@ -1,7 +1,8 @@
 // based on https://github.com/npm/npm/blob/40c1b0f5cba5c4ecbcea8e9a7def9965682c2701/bin/npm-cli.js
 
 //#!/usr/bin/env node
-module.exports = (function () { // wrapper in case we're in module_context mode  edit: set module.exports
+module.exports = (function (argv) { // wrapper in case we're in module_context mode  edit: set module.exports, add argv
+  process.argv = argv;
 
   // windows: running "npm blah" in this folder will invoke WSH, not node.
   /*global WScript*/
@@ -20,7 +21,7 @@ module.exports = (function () { // wrapper in case we're in module_context mode 
   process.title = 'npm'
 
   var log = require('./node_modules/npm/node_modules/npmlog') // edit: ./node-_modules/npm/node_modules-relative paths
-  log.pause() // will be unpaused when config is loaded.
+  //log.pause() // will be unpaused when config is loaded. edit: disable
 
   log.info('it worked if it ends with', 'ok')
 
