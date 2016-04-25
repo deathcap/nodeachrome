@@ -7,7 +7,7 @@
 const Writable = require('stream').Writable;
 const Readable = require('stream').Readable;
 const util = {inherits: require('inherits')};
-const fs = {};
+module.exports = (fs) => {
 
 // based on node.js:
 // https://github.com/nodejs/node/blob/master/lib/fs.js
@@ -337,5 +337,4 @@ WriteStream.prototype.close = ReadStream.prototype.close;
 // There is no shutdown() for files.
 WriteStream.prototype.destroySoon = WriteStream.prototype.end;
 
-
-module.exports = fs;
+};

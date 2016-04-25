@@ -170,6 +170,17 @@ function messageHandler(msg, push, done) {
       const options = params[2];
       fs.writeFile(file, data, options, cb);
     }
+  } else if (method === 'fs.write') {
+    const fd = params[0]; // TODO: restrict fd? 0, 1, 2 stdio?
+    const buffer = params[1];
+    const offset = params[2];
+    const length = params[3];
+    if (params.length < 5) {
+      fs.write(fd, data, length, cb);
+    } else {
+      const position = params[4];
+      fd.write(fd, data, length, position, cb);
+    }
   } else {
     push({error: {
       code: -32601, // defined in http://www.jsonrpc.org/specification#response_object

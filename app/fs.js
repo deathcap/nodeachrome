@@ -121,7 +121,16 @@ fs.writeFile = (file, data, options, cb) => {
   }
 };
 
-Object.assign(fs, require('./fs-static.js'));
-Object.assign(fs, require('./fs-stream.js'));
+fs.write = (fd, buffer, offset, length, position, cb) => {
+  if (!cb) {
+    cb = position;
+    sendNative('fs.write', [fd, buffer, offset, length], cb);
+  } else {
+    sendNative('fs.write', [fd, buffer, offset, length, position], cb);
+  }
+}
+
+require('./fs-static.js')(fs);
+require('./fs-stream.js')(fs);
 
 module.exports = fs;

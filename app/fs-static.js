@@ -4,7 +4,8 @@
 
 // https://nodejs.org/api/fs.html
 
-const fs = {};
+module.exports = (fs) => {
+
 
 // TODO: write this data to disk too, so it is consistent on the OS filesystem
 const STATIC_FILE_DATA = {
@@ -115,4 +116,4 @@ fs.statSync = (path) => {
   throw e;
 };
 
-module.exports = fs;
+};
