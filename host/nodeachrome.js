@@ -26,6 +26,7 @@ const output = new nativeMessage.Output();
 const ROOT = path.join(__dirname, '../sandbox');
 if (!fs.existsSync(ROOT)) fs.mkdirSync(ROOT);
 
+// Return a path relative to the sandbox root
 function fixpath(relativePath) {
   const newPath = path.join(ROOT, relativePath);
   if (!newPath.startsWith(ROOT)) {
@@ -34,6 +35,16 @@ function fixpath(relativePath) {
   return newPath;
 }
 
+// Attempt to undo the fixpath() transformation
+function choppath(abspath) {
+  if (abspath === ROOT) {
+    return '/';
+  } else if (abspath.startsWith(ROOT)) {
+    return abspath.substring(ROOT.length);
+  } else {
+    return abspath;
+  }
+}
 
 process.stdin
   .pipe(input)
@@ -151,10 +162,14 @@ function messageHandler(msg, push, done) {
   } else if (method === 'fs.realpath') {
     const path = fixpath(params[0]);
     if (params.length < 2) {
-      fs.realpath(path, cb);
+      fs.realpath(path, (err, result) => {
+        cb(err, choppath(result));
+      });
     } else {
       const cache = params[1];
-      fs.realpath(path, cache, cb);
+      fs.realpath(path, cache, (err, result) => {
+        cb(err, choppath(result));
+      });
     }
   } else if (method === 'fs.rename') {
     const oldPath = fixpath(params[0]);
