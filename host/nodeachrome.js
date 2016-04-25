@@ -35,29 +35,27 @@ process.stdin
   .pipe(output)
   .pipe(process.stdout);
 
-function encodeError(err) {
-  return {error:
-            {
-              code: err.errno, // must be an integer, but err.code is a string like 'ENOENT'
-              message: err.toString(),
-            }
-          };
-}
-
-function encodeResult(err, data) {
+function encodeResult(err, data, id) {
   if (err) {
-    return encodeError(err);
+    return {error:
+             {
+               code: err.errno, // must be an integer, but err.code is a string like 'ENOENT'
+               message: err.toString(),
+               id: id,
+             }
+           };
   } else {
-    return {result:data};
+    return {result:data, id:id};
   }
 }
 
 function messageHandler(msg, push, done) {
   const method = msg.method;
   const params = msg.params;
+  const id = msg.id;
 
   function cb(err, data) {
-    push(encodeResult(err, data));
+    push(encodeResult(err, data, id));
     done();
   }
 
@@ -185,8 +183,9 @@ function messageHandler(msg, push, done) {
     push({error: {
       code: -32601, // defined in http://www.jsonrpc.org/specification#response_object
       message: 'Method not found',
-      data: `invalid method: ${method}`}
-    });
+      data: `invalid method: ${method}`,
+      id: id,
+    }});
     done();
   }
 }
