@@ -30,7 +30,6 @@ fs.close = (fd, cb) => sendNative('fs.close', [fd], cb);
 
 fs.exists = (path, cb) => sendNative('fs.exists', [path], cb);
 fs.fstat = (fd, cb) => sendNative('fs.fstat', [fd], cb);
-fs.lstat = (path, cb) => sendNative('fs.lstat', [path], cb);
 fs.mkdir = (path, mode, cb) => {
   if (!cb) {
     cb = mode;
@@ -82,22 +81,36 @@ fs.realpath = (path, cache, cb) => {
 fs.rename = (oldPath, newPath, cb) => sendNative('fs.rename', [oldPath, newPath], cb);
 fs.rmdir = (path, cb) => sendNative('fs.rmdir', [path], cb);
 
+function addStatMethods(stats) {
+  // see https://github.com/nodejs/node-v0.x-archive/blob/ef4344311e19a4f73c031508252b21712b22fe8a/lib/fs.js#L124-L189
+  function checkModeProperty(property) {
+    return (stats.mode & constants.S_IFMT) === property;
+  }
+
+  stats.isDirectory = () => checkModeProperty(constants.S_IFDIR);
+  stats.isFile = () => checkModeProperty(constants.S_IFREG);
+  stats.isBlockDevice = () => checkModeProperty(constants.S_IFBLK);
+  stats.isCharacterDevice = () => checkModeProperty(constants.S_IFCHR);
+  stats.isSymbolicLink = () => checkModeProperty(constants.S_IFLNK);
+  stats.isFIFO = () => checkModeProperty(constants.S_IFIFO);
+  stats.isSocket = () => checkModeProperty(constants.S_IFSOCK);
+}
+
+fs.lstat = (path, cb) => {
+  sendNative('fs.lstat', [path], (err, stats) => {
+    if (err) return cb(err);
+
+    addStatMethods(stats);
+
+    cb(null, stats);
+  });
+}
+
 fs.stat = (path, cb) => {
   sendNative('fs.stat', [path], (err, stats) => {
     if (err) return cb(err);
 
-    // see https://github.com/nodejs/node-v0.x-archive/blob/ef4344311e19a4f73c031508252b21712b22fe8a/lib/fs.js#L124-L189
-    function checkModeProperty(property) {
-      return (stats.mode & constants.S_IFMT) === property;
-    }
-
-    stats.isDirectory = () => checkModeProperty(constants.S_IFDIR);
-    stats.isFile = () => checkModeProperty(constants.S_IFREG);
-    stats.isBlockDevice = () => checkModeProperty(constants.S_IFBLK);
-    stats.isCharacterDevice = () => checkModeProperty(constants.S_IFCHR);
-    stats.isSymbolicLink = () => checkModeProperty(constants.S_IFLNK);
-    stats.isFIFO = () => checkModeProperty(constants.S_IFIFO);
-    stats.isSocket = () => checkModeProperty(constants.S_IFSOCK);
+    addStatMethods(stats);
 
     cb(null, stats);
   });
