@@ -14,6 +14,14 @@ module.exports = (fs) => {
 // https://github.com/nodejs/node/blob/627524973a22c584fdd06c951fbe82364927a1ed/lib/fs.js#L1777
 // TODO: can this be moved to a module or refactored elsewhere somehow?
 
+var pool;
+
+function allocNewPool(poolSize) {
+  pool = Buffer.allocUnsafe(poolSize);
+  pool.used = 0;
+}
+
+
 fs.createReadStream = function(path, options) {
   return new ReadStream(path, options);
 };
