@@ -141,7 +141,11 @@ fs.write = (fd, buffer, offset, length, position, cb) => {
   } else {
     sendNative('fs.write', [fd, buffer, offset, length, position], cb);
   }
-}
+};
+
+fs.read = (fd, buffer, offset, length, position, cb) => {
+  sendNative('fs.read', [fd, buffer, offset, length], cb);
+};
 
 require('./fs-static.js')(fs);
 require('./fs-stream.js')(fs);

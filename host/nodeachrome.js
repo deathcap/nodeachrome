@@ -219,6 +219,16 @@ function messageHandler(msg, push, done) {
       const position = params[4];
       fs.write(fd, buffer, offset, length, position, cb);
     }
+  } else if (method === 'fs.read') {
+    const fd = params[0];
+    if (fd === process.stdin.fd) throw new Error('fs.read tried to read from stdin but used for chrome native host'); // TODO: proper error
+
+    const buffer = typeof params[1] === 'object' && params[1].type === 'Buffer' ? new Buffer(params[1].data) : params[1]; // TODO: pass which args should be Buffers
+    const offset = params[2];
+    const length = params[3];
+    const position = params[4];
+
+    fs.read(fd, buffer, offset, length, position, cb);
   } else {
     push({error: {
       code: -32601, // defined in http://www.jsonrpc.org/specification#response_object
