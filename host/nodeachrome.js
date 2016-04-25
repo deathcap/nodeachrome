@@ -6,6 +6,12 @@
 
 // Native messaging host, provides native access to OS functions over stdin/stdout
 // for the Google Chrome extension
+//
+// This host provides some debugging information on stderr. To see it, run Chrome
+// from the command-line, for example:
+//
+//  /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome
+//
 // TODO: port off nodejs?
 
 const process = require('process');
@@ -54,8 +60,12 @@ function messageHandler(msg, push, done) {
   const params = msg.params;
   const id = msg.id;
 
+  console.error('received',msg);
+
   function cb(err, data) {
-    push(encodeResult(err, data, id));
+    const response = encodeResult(err, data, id);
+    console.error('sending',response);
+    push(response);
     done();
   }
 
@@ -81,7 +91,10 @@ function messageHandler(msg, push, done) {
     fs.chown(path, uid, gid, cb);
   } else if (method === 'fs.close') {
     const fd = params[0];
-    fs.close(fd, cb);
+    fs.close(fd, (err) => {
+      console.error('fs.close',fd);
+      cb(err)
+    });
     /* TODO
   } else if (method === 'fs.createReadStream') {
     const path = params[0];
@@ -108,9 +121,15 @@ function messageHandler(msg, push, done) {
     const flags = params[1];
     if (params.length < 3) {
       const mode = params[2];
-      fs.open(path, flags, mode, cb);
+      fs.open(path, flags, mode, (err, fd) => {
+        console.error('fs.open',path,fd);
+        cb(err, fd);
+      });
     } else {
-      fs.open(path, flags, cb);
+      fs.open(path, flags, (err, fd) => {
+        console.error('fs.open',path,fd);
+        cb(err, fd);
+      });
     }
   } else if (method === 'fs.readFile') {
     const file = fixpath(params[0]);
@@ -170,14 +189,20 @@ function messageHandler(msg, push, done) {
     }
   } else if (method === 'fs.write') {
     const fd = params[0]; // TODO: restrict fd? 0, 1, 2 stdio?
-    const buffer = params[1];
+    if (fd === process.stdout.fd) fd = process.stderr.fd; // stdout is used by native host
+
+    const buffer = typeof params[1] === 'object' && params[1].type === 'Buffer' ? new Buffer(params[1].data) : params[1]; // TODO: pass which args should be Buffers
     const offset = params[2];
     const length = params[3];
-    if (params.length < 5) {
-      fs.write(fd, data, length, cb);
+    const position = params[4];
+    // TODO: also support the other type of fs.write
+    console.error('WRITE BUFFER',buffer);
+    console.error('buffer',buffer.length,length,position,'to',fd);
+    if (params.length < 6) {
+      fs.write(fd, buffer, offset, length, cb);
     } else {
       const position = params[4];
-      fd.write(fd, data, length, position, cb);
+      fs.write(fd, buffer, offset, length, position, cb);
     }
   } else {
     push({error: {
