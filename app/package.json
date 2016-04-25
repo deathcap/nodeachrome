@@ -1,6 +1,6 @@
 {
   "name": "nodeachrome-app",
-  "description": "Chrome extension",
+  "description": "Chrome extension for running Node.js API scripts in the browser",
   "version": "0.0.1",
   "main": "nodeachrome.js",
   "repository": {
