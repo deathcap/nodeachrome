@@ -121,16 +121,7 @@ fs.writeFile = (file, data, options, cb) => {
   }
 };
 
-// TODO
-function ReadStream() {
-}
-
-function WriteStream() {
-}
-
-fs.ReadStream = ReadStream;
-fs.WriteStream = WriteStream;
-
 Object.assign(fs, require('./fs-static.js'));
+Object.assign(fs, require('./fs-stream.js'));
 
 module.exports = fs;
