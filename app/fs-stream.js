@@ -16,6 +16,8 @@ module.exports = (fs) => {
 
 var pool;
 
+const kMinPoolSpace = 128;
+
 function allocNewPool(poolSize) {
   pool = Buffer.allocUnsafe(poolSize);
   pool.used = 0;
