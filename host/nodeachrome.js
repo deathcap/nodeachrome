@@ -41,8 +41,8 @@ function encodeResult(err, data, id) {
              {
                code: err.errno, // must be an integer, but err.code is a string like 'ENOENT'
                message: err.toString(),
-               id: id,
-             }
+             },
+             id: id,
            };
   } else {
     return {result:data, id:id};
