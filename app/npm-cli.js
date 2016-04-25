@@ -20,6 +20,22 @@ module.exports = (function (argv) { // wrapper in case we're in module_context m
 
   process.title = 'npm'
 
+  // Fix interoperability issue between:
+  // request/request.js https://github.com/request/request
+  // http (browserified) uses https://github.com/jhiesey/stream-http api: https://nodejs.org/api/http.html
+  /* request.js contains:
+
+    // XXX This is different on 0.10, because SSL is strict by default
+    if (self.httpModule === https &&
+        self.strictSSL && (!response.hasOwnProperty('socket') ||
+        !response.socket.authorized)) {
+
+  but browserified http response doesn't contain the "socket" property (no underlying socket access),
+  so it cannot check response.socket.authorized. Set strictSSL false via npm config to avoid this check.
+TODO: does the browser actually perform the SSL validation check anyways? I'd think so
+   */
+  process.env['npm_config_strict-ssl'] = 'false';
+
   var log = require('./node_modules/npm/node_modules/npmlog') // edit: ./node-_modules/npm/node_modules-relative paths
   //log.pause() // will be unpaused when config is loaded. edit: disable
 
