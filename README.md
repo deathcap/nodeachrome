@@ -50,7 +50,8 @@ in the `#!` line.
 
 5. Launch the Chrome extension app in chrome://extensions click "Launch". This opens up a debugging
 window for sending commands to the native host. For the full JavaScript environment: Inspect views: main.html,
-open the JavaScript console. Interact with the console by typing JavaScript, see below for APIs.
+open the JavaScript console. Use `evalsb()` to evaluate code in the eval sandbox and
+interact with the console by typing JavaScript, see below for APIs.
 
 ## fs sandbox
 
