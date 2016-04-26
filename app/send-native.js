@@ -18,7 +18,7 @@ function disconnected(e) {
 }
 
 function recvIncoming(msg) {
-  console.log('received incoming native msg:',msg);
+  //console.log('received incoming native msg:',msg);
   postSandbox({cmd: 'recvNative', msg: msg});
 }
 
@@ -69,12 +69,12 @@ window.addEventListener('load', (event) => {
 
 window.addEventListener('message', (event) => {
   //console.log('received sandbox iframe message:',event);
-  console.log('main event data:',event.data);
+  //console.log('main event data:',event.data);
   //console.log('event source:',event.source);
 
   // Main thread receives sendNative messages from sandbox -> sends them to native host
   if (event.data.cmd === 'sendNative') {
-    console.log('received main thread sendNative event:',event);
+    //console.log('received main thread sendNative event:',event);
     sendNative(event.data.method, event.data.params, event.data.id);
   }
 });

@@ -17,7 +17,7 @@ window.addEventListener('message', (event) => {
     mainSource = event.source;
     mainOrigin = event.origin;
   } else if (event.data.cmd === 'recvNative') {
-    console.log('recvNative in sandbox', event.data);
+    //console.log('recvNative in sandbox', event.data);
     handleIncoming(event.data.msg);
   }
 });
@@ -43,7 +43,7 @@ function decodeResponse(response, cb) {
 }
 
 function proxiedSendNative(method, params, cb) {
-  console.log('proxiedSendNative',method,params);
+  //console.log('proxiedSendNative',method,params);
   const id = nextID;
   nextID += 1;
 
