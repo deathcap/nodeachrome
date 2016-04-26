@@ -4,6 +4,7 @@ const application = 'io.github.deathcap.nodeachrome';
 
 let port = null;
 
+// Send a message to the sandboxed iframe
 function postSandbox(msg) {
   const iframe = document.getElementById('sandbox');
   const targetOrigin = '*';
@@ -44,4 +45,21 @@ function sendNative(msg) {
   //chrome.runtime.sendNativeMessage(application, msg, (response) => decodeResponse(response, cb));
 }
 
-module.exports = sendNative;
+// When the page loads, first contact the sandbox frame so it gets our event source
+window.addEventListener('load', (event) => {
+  console.log('onload');
+  postSandbox({cmd: 'ping'});
+});
+
+window.addEventListener('message', (event) => {
+  //console.log('received sandbox iframe message:',event);
+  console.log('main event data:',event.data);
+  //console.log('event source:',event.source);
+
+  // Main thread receives sendNative messages from sandbox -> sends them to native host
+  if (event.data.cmd === 'sendNative') {
+    console.log('received main thread sendNative event:',event);
+    sendNative(event.data.msg);
+  }
+});
+

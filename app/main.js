@@ -41,35 +41,9 @@ global.g = {
   evalsb: evalsb,
 };
 
-// Send a message to the sandboxed iframe - this can run eval()
-function postSandbox(msg) {
-  const iframe = document.getElementById('sandbox');
-  const targetOrigin = '*';
-  iframe.contentWindow.postMessage(msg, targetOrigin);
-}
-
 // Evaluate code in sandboxed frame
 function evalsb(code) {
-  postSandbox({cmd: 'eval', code: code});
+  document.getElementById('sandbox').contentWindow.postMessage({cmd: 'eval', code: code}, '*');
 }
 
-window.addEventListener('load', (event) => {
-  console.log('onload');
-  // When the page loads, first contact the sandbox frame
-  postSandbox({cmd: 'ping'});
-});
-
-const sendNative = require('./send-native');
-
-window.addEventListener('message', (event) => {
-  console.log('received sandbox iframe message:',event);
-  console.log('event data:',event.data);
-  console.log('event source:',event.source);
-
-  // Main thread receives sendNative messages from sandbox -> sends them to native host
-  if (event.data.cmd === 'sendNative') {
-    console.log('received main thread sendNative event:',event);
-    sendNative(event.data.msg);
-  }
-});
-
+require('./send-native.js');
