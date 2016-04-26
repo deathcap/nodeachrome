@@ -10,7 +10,7 @@ Object.assign(global, {
 
   // Pull in most implemented from https://github.com/substack/node-browserify/blob/master/lib/builtins.js
   assert: require('assert'),
-  buffer: require('buffer'),
+  Buffer: require('buffer'),
   console: require('console'),
   constants: require('constants'),
   crypto: require('crypto'),
