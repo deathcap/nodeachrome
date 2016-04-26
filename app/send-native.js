@@ -12,9 +12,9 @@ function postSandbox(msg) {
 }
 
 function disconnected(e) {
+  port = null; // to allow to reconnect if it crashes
   console.log('unexpected native host disconnect:',e);
   throw new Error('unexpected native host disconnect:'+e);
-  // TODO: reconnect? if it crashes
 }
 
 function recvIncoming(msg) {
