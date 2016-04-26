@@ -1,7 +1,6 @@
 'use strict';
 
 require('shellasync/global'); // export some useful shell-like functions: cat(), ls(), ... using node.js fs async APIs
-// https://github.com/npm/npm/blob/master/bin/npm-cli.js
 require('./ui')(); // wire up button event handlers
 require('./more-process');
 
@@ -39,18 +38,38 @@ global.g = {
   npm: require('npm'),
   npm_cli: require('./npm-cli'),
 
-  postsb: postsb,
+  evalsb: evalsb,
 };
 
-// test sending message to sandboxed iframe
-function postsb() {
+// Send a message to the sandboxed iframe - this can run eval()
+function postSandbox(msg) {
   const iframe = document.getElementById('sandbox');
-  const message = {hello: 'world'};
   const targetOrigin = '*';
-  iframe.contentWindow.postMessage(message, targetOrigin);
-};
+  iframe.contentWindow.postMessage(msg, targetOrigin);
+}
+
+// Evaluate code in sandboxed frame
+function evalsb(code) {
+  postSandbox({cmd: 'eval', code: code});
+}
+
+window.addEventListener('load', (event) => {
+  console.log('onload');
+  // When the page loads, first contact the sandbox frame
+  postSandbox({cmd: 'ping'});
+});
+
+const sendNative = require('./send-native');
 
 window.addEventListener('message', (event) => {
   console.log('received sandbox iframe message:',event);
   console.log('event data:',event.data);
+  console.log('event source:',event.source);
+
+  // Main thread receives sendNative messages from sandbox -> sends them to native host
+  if (event.data.cmd === 'sendNative') {
+    console.log('received main thread sendNative event:',event);
+    sendNative(event.data.msg);
+  }
 });
+

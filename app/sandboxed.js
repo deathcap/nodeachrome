@@ -1,39 +1,45 @@
 'use strict';
 
+require('shellasync/global'); // export some useful shell-like functions: cat(), ls(), ... using node.js fs async APIs
+require('./more-process');
+
+// Expose globally for debugging
+global.G = {
+  require: require,
+  process: process,
+
+  // Pull in most implemented from https://github.com/substack/node-browserify/blob/master/lib/builtins.js
+  assert: require('assert'),
+  buffer: require('buffer'),
+  console: require('console'),
+  constants: require('constants'),
+  crypto: require('crypto'),
+  domain: require('domain'),
+  events: require('events'),
+  fs: require('fs'), // our own ./fs.js
+  http: require('http'),
+  https: require('https'),
+  os: require('os'),
+  path: require('path'),
+  querystring: require('querystring'),
+  stream: require('stream'),
+  string_decoder: require('string_decoder'),
+  sys: require('sys'),
+  timers: require('timers'),
+  tty: require('tty'),
+  url: require('url'),
+  util: require('url'),
+  vm: require('vm'),
+  zlib: require('zlib'),
+
+  // Useful apps
+  browserify: require('browserify'),
+  npm: require('npm'),
+  npm_cli: require('./npm-cli'),
+};
+
 window.addEventListener('message', (event) => {
-  event.source.postMessage({
-    hello: eval('1 + 2'), // eval is allowed here
-  }, event.origin);
-
-
-  // try using http module within sandbox iframe
-  // http://stackoverflow.com/questions/6968448/where-is-body-in-a-nodejs-http-get-response
-  // not allowed for http://*/ :( in sandbox, need to go back to main thread
-  const http = require('http');
-
-  var options = {
-    host: 'www.google.com',
-    port: 80,
-    path: '/index.html'
-  };
-
-  http.get(options, function(res) {
-    event.source.postMessage({
-      statusCode: res.statusCode,
-    }, event.origin);
-    console.log("Got response: " + res.statusCode);
-    res.on("data", function(chunk) {
-      event.source.postMessage({
-        body: chunk,
-      }, event.origin);
-      console.log("BODY: " + chunk);
-    });
-  }).on('error', function(e) {
-    event.source.postMessage({
-      error: e.message,
-    }, event.origin);
-    console.log("Got error: " + e.message);
-  });
-
+  if (event.data.cmd === 'eval') {
+    event.source.postMessage({result: eval(event.data.code)}, event.origin);
+  }
 });
-
