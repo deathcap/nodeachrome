@@ -27,5 +27,5 @@ fs.readFile(preludePath, 'utf8', (err, prelude) => {
     preludePath: preludePath,
     prelude: prelude,
   });
-  b.bundle().pipe(process.stdout);
+  b.bundle().pipe(fs.createWriteStream(path.join(__dirname, 'bundle.js')));
 });
