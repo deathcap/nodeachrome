@@ -144,8 +144,13 @@ fs.write = (fd, buffer, offset, length, position, cb) => {
   }
 };
 
-fs.read = (fd, buffer, offset, length, position, cb) => {
-  sendNative('fs.read', [fd, buffer, offset, length], cb);
+fs.read = (fd, inoutBuffer, offset, length, position, cb) => {
+  sendNative('fs.read', [fd, inoutBuffer, offset, length], (err, bytesRead, outBuffer) => {
+    // we don't have the luxury of in-process fs reading, so have to writeback the buffer
+    (new Buffer(outBuffer.data)).copy(inoutBuffer);
+
+    cb(err, bytesRead, outBuffer);
+  });
 };
 
 require('./fs-static.js')(fs);

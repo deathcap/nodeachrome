@@ -228,7 +228,21 @@ function messageHandler(msg, push, done) {
     const length = params[3];
     const position = params[4];
 
-    fs.read(fd, buffer, offset, length, position, cb);
+    fs.read(fd, buffer, offset, length, position, (err, bytesRead, outBuffer) => {
+      if (err) {
+        push(encodeResponse(err));
+        done();
+        return;
+      }
+
+      // fs.read() has a weird callback, extra third parameter is output buffer, needs special handling
+      push({
+        result: bytesRead,
+        outBuffer: outBuffer,
+        id: id
+      });
+      done();
+    });
   } else {
     push({error: {
       code: -32601, // defined in http://www.jsonrpc.org/specification#response_object

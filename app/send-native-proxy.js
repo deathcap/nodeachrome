@@ -37,6 +37,8 @@ function decodeResponse(response, cb) {
   if (typeof cb !== 'function') { console.error('??? decodeResponse non-string callback',cb); cb = () => {}; }
   if (!response) return cb(chrome.runtime.lastError);
   if (response.error) return cb(new Error(response.error.message));
+  if (response.outBuffer) return cb(null, response.result, response.outBuffer); // fs.read() special-case
+
   return cb(null, response.result);
 }
 
