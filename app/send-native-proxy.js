@@ -16,6 +16,7 @@ window.addEventListener('message', (event) => {
     // save for sending messages back to main thread later
     mainSource = event.source;
     mainOrigin = event.origin;
+    console.log('sandbox received ping:',event.data);
   } else if (event.data.cmd === 'recvNative') {
     //console.log('recvNative in sandbox', event.data);
     handleIncoming(event.data.msg);

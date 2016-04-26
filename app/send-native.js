@@ -5,6 +5,7 @@ const application = 'io.github.deathcap.nodeachrome';
 let port = null;
 
 // Send a message to the sandboxed iframe
+// TODO: track which sandbox sends us, send back instead of hardcoding sandbox-0
 function postSandbox(msg) {
   const iframe = document.getElementById('sandbox-0');
   const targetOrigin = '*';
@@ -62,6 +63,7 @@ function sendNative(method, params, id) {
 }
 
 // When the page loads, first contact the sandbox frame so it gets our event source
+// TODO: refactor with newsb()
 window.addEventListener('load', (event) => {
   console.log('onload');
   postSandbox({cmd: 'ping'});
