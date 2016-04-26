@@ -4,7 +4,7 @@ require('shellasync/global'); // export some useful shell-like functions: cat(),
 require('./more-process');
 
 // Expose globally for debugging
-global.G = {
+Object.assign(global, {
   require: require,
   process: process,
 
@@ -36,7 +36,7 @@ global.G = {
   browserify: require('browserify'),
   npm: require('npm'),
   npm_cli: require('./npm-cli'),
-};
+});
 
 window.addEventListener('message', (event) => {
   if (event.data.cmd === 'eval') {
