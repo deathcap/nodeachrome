@@ -21,11 +21,15 @@ builtins['npm-registry-client'] = require.resolve('npm-registry-client');
 
 fs.readFile(preludePath, 'utf8', (err, prelude) => {
   if (err) throw err;
-  const b = browserify('./main.js', {
+  const opts = {
     debug: true,
     builtins: builtins,
     preludePath: preludePath,
     prelude: prelude,
-  });
-  b.bundle().pipe(fs.createWriteStream(path.join(__dirname, 'bundle.js')));
+  };
+  const b = browserify('./main.js', opts);
+  b.bundle().pipe(fs.createWriteStream(path.join(__dirname, 'bundle-main.js')));
+
+  const b2 = browserify('./sandboxed.js', opts);
+  b2.bundle().pipe(fs.createWriteStream(path.join(__dirname, 'bundle-sandboxed.js')));
 });
