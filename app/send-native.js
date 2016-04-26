@@ -6,7 +6,7 @@ let port = null;
 
 // Send a message to the sandboxed iframe
 function postSandbox(msg) {
-  const iframe = document.getElementById('sandbox');
+  const iframe = document.getElementById('sandbox-0');
   const targetOrigin = '*';
   iframe.contentWindow.postMessage(msg, targetOrigin);
 }

@@ -9,7 +9,7 @@ Object.assign(global, {
 
 // Evaluate code in sandboxed frame
 function evalsb(code) {
-  document.getElementById('sandbox').contentWindow.postMessage({cmd: 'eval', code: code}, '*');
+  document.getElementById('sandbox-0').contentWindow.postMessage({cmd: 'eval', code: code}, '*');
 }
 
 require('./send-native.js');
