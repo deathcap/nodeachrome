@@ -1,11 +1,10 @@
 'use strict';
 
 require('shellasync/global'); // export some useful shell-like functions: cat(), ls(), ... using node.js fs async APIs
-require('./ui')(); // wire up button event handlers
 require('./more-process');
 
 // Expose globally for debugging
-global.g = {
+global.G = {
   require: require,
   process: process,
 
@@ -37,13 +36,10 @@ global.g = {
   browserify: require('browserify'),
   npm: require('npm'),
   npm_cli: require('./npm-cli'),
-
-  evalsb: evalsb,
 };
 
-// Evaluate code in sandboxed frame
-function evalsb(code) {
-  document.getElementById('sandbox').contentWindow.postMessage({cmd: 'eval', code: code}, '*');
-}
-
-require('./send-native.js');
+window.addEventListener('message', (event) => {
+  if (event.data.cmd === 'eval') {
+    event.source.postMessage({result: eval(event.data.code)}, event.origin);
+  }
+});
