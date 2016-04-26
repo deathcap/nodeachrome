@@ -52,4 +52,5 @@ function postsb() {
 
 window.addEventListener('message', (event) => {
   console.log('received sandbox iframe message:',event);
+  console.log('event data:',event.data);
 });
