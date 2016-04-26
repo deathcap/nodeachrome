@@ -38,4 +38,18 @@ global.g = {
   browserify: require('browserify'),
   npm: require('npm'),
   npm_cli: require('./npm-cli'),
+
+  postsb: postsb,
 };
+
+// test sending message to sandboxed iframe
+function postsb() {
+  const iframe = document.getElementById('sandbox');
+  const message = {hello: 'world'};
+  const targetOrigin = '*';
+  iframe.contentWindow.postMessage(message, targetOrigin);
+};
+
+window.addEventListener('message', (event) => {
+  console.log('received sandbox iframe message:',event);
+});

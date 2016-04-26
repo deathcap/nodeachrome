@@ -5,8 +5,11 @@
     "description": "Nodeachrome",
     "app": {
         "background": {
-            "scripts": [ "background.js" ]
+            "scripts": ["background.js"]
         }
+    },
+    "sandbox": {
+        "pages": ["sandbox.html"]
     },
     "permissions": [
         "http://*/",
