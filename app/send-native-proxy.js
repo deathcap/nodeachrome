@@ -44,10 +44,9 @@ function proxiedSendNative(method, params, cb) {
   console.log('proxiedSendNative',method,params);
   const id = nextID;
   nextID += 1;
-  const msg = {method: method, params: params, id: id};
 
   // To main thread
-  mainSource.postMessage({cmd: 'sendNative', msg: msg}, mainOrigin);
+  mainSource.postMessage({cmd: 'sendNative', method, params, id}, mainOrigin);
 
   callbacks.set(id, (response) => decodeResponse(response, cb));
 };
