@@ -29,4 +29,4 @@ Object.assign(process.env, {
 });
 
 console.log('creating initial sandbox');
-spawn(); // when page loads, create first sandbox
+spawn(['init']); // when page loads, create first sandbox

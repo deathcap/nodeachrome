@@ -17,7 +17,7 @@ window.addEventListener('message', (event) => {
     kernelSource = event.source;
     kernelOrigin = event.origin;
     process.pid = event.data.pid;
-    process.argv = event.data.argv || [];
+    process.argv = ['/bin/node'].concat(event.data.argv || []); // [0]=always node, [1]=script name, [2]=args
     process.env = event.data.env || {};
 
     console.log('sandbox received _start:',event.data);
