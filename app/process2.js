@@ -28,10 +28,7 @@ process.cwd = () => {
   return process.env.PWD;
 };
 process.execPath = '/bin/node';
-const BrowserStdout = require('browser-stdout');
-process.stdout = BrowserStdout();
-process.stderr = BrowserStdout({label: 'stderr'}); // TODO: console.error instead of console.log?
-// TODO: stdin
+require('./stdout');
 
 // http://stackoverflow.com/questions/24042861/node-js-what-does-process-binding-mean
 // "This function returns internal module, like require"

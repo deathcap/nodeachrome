@@ -14,7 +14,6 @@
   "dependencies": {
     "acorn": "^3.1.0",
     "asarray": "^0.1.0",
-    "browser-stdout": "^1.3.0",
     "browserify": "^13.0.0",
     "npm": "deathcap/npm#static-require",
     "npm-registry-client": "deathcap/npm-registry-client#browserify",
