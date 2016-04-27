@@ -26,7 +26,7 @@ function spawn(argv, env) {
   iframe.setAttribute('id', 'userland-process-' + pid);
   iframe.setAttribute('src', '/userland/userland.html');
 
-  iframe.setAttribute('style', 'border-width: 5px; position: absolute; top: 200px; left: 0; border-radius: 4px; padding: 8px;');
+  iframe.setAttribute('style', 'border-width: 5px; position: absolute; top: 10px; left: 10px; border-radius: 4px; padding: 8px;');
   iframe.setAttribute('draggable', 'true'); // allow picking it up TODO: allow dropping
 
   iframe.addEventListener('dragstart', (event) => {
