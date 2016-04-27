@@ -17,11 +17,12 @@ window.addEventListener('message', (event) => {
     kernelSource = event.source;
     kernelOrigin = event.origin;
     process.pid = event.data.pid;
-    process.argv = ['/bin/node'].concat(event.data.argv || []); // [0]=always node, [1]=script name, [2]=args
+    process.argv = ['/bin/node'].concat(event.data.argv || ['a.out']); // [0]=always node, [1]=script name, [2]=args
+    process.title = process.argv[1];
     process.env = event.data.env || {};
 
     console.log('sandbox received _start:',event.data);
-    process.stdout.write(`started pid=${process.pid}, argv=${JSON.stringify(process.argv)}, env=${JSON.stringify(process.env)}`);
+    process.stdout.write(`\nStarted pid=${process.pid}, argv=${JSON.stringify(process.argv)}, env=${JSON.stringify(process.env)}\n`);
 
     event.source.postMessage({pong: true, pid: event.data.pid}, event.origin);
   }

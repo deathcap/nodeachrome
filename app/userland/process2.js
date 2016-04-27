@@ -30,3 +30,11 @@ process.binding = (module) => {
   console.log(`process.binding(${module})`);
   return {};
 };
+
+// Changing process.title changes document title
+// TODO: visibly show in chrome around iframe
+Object.defineProperty(process, 'title', {
+  //get: () => document.title,
+  get: () => 'browser', // some code relies on it
+  set: (title) => document.title = title,
+});
