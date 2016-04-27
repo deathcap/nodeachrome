@@ -3,12 +3,12 @@
 require('./ui')(); // wire up button event handlers
 require('./send-native.js');
 
-const newsb = require('./multi').newsb;
+const spawn = require('./multi').spawn;
 const evalin = require('./multi').evalin;
 
 // Expose globally for debugging
 Object.assign(global, {
-  newsb: newsb,
+  spawn: spawn,
   evalin: evalin,
   process: process,
 });
@@ -25,4 +25,4 @@ Object.assign(process.env, {
 });
 
 console.log('creating initial sandbox');
-newsb(); // when page loads, create first sandbox
+spawn(); // when page loads, create first sandbox

@@ -3,16 +3,16 @@
 // Multi-sandbox support
 // Maintains multiple independent execution contexts for JavaScript, using sandboxed iframes (unique origins)
 
-let nextSbID = 1;
+let nextPid = 1;
 let iframes = new Map();
 
-// Create a new sandboxed execution context
-function newsb(argv, env) {
+// Create a new sandboxed execution context, previously 'newsb', like Unix spawn/exec (close enough) or posix_spawn/system
+function spawn(argv, env) {
   const container = document.getElementById('sandboxes');
 
   const iframe = document.createElement('iframe');
-  const pid = nextSbID;
-  nextSbID += 1;
+  const pid = nextPid;
+  nextPid += 1;
 
   if (!env) env = process.env; // inherit the environment
 
@@ -44,7 +44,7 @@ function evalin(pid, code) {
 }
 
 module.exports = {
-  newsb,
+  spawn,
   evalin,
   postSandbox,
 };
