@@ -41,7 +41,7 @@ function proxiedSendNative(method, params, cb) {
   nextID += 1;
 
   // To main thread
-  postMessageToMain({cmd: 'sendNative', method, params, msgID, sbID: process.pid});
+  postMessageToMain({cmd: 'sendNative', method, params, msgID, pid: process.pid});
 
   callbacks.set(msgID, (response) => decodeResponse(response, cb));
 };

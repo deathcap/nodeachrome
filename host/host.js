@@ -52,7 +52,7 @@ process.stdin
   .pipe(output)
   .pipe(process.stdout);
 
-function encodeResult(err, data, msgID, sbID) {
+function encodeResult(err, data, msgID, pid) {
   if (err) {
     return {error:
              {
@@ -60,10 +60,10 @@ function encodeResult(err, data, msgID, sbID) {
                message: err.toString(),
              },
              msgID,
-             sbID,
+             pid,
            };
   } else {
-    return {result: data, msgID, sbID};
+    return {result: data, msgID, pid};
   }
 }
 
@@ -71,12 +71,12 @@ function messageHandler(msg, push, done) {
   const method = msg.method;
   const params = msg.params;
   const msgID = msg.msgID;
-  const sbID = msg.sbID;
+  const pid = msg.pid;
 
   console.error('received',msg);
 
   function cb(err, data) {
-    const response = encodeResult(err, data, msgID, sbID);
+    const response = encodeResult(err, data, msgID, pid);
     console.error('sending',response);
     push(response);
     done();
@@ -242,7 +242,7 @@ function messageHandler(msg, push, done) {
         result: bytesRead,
         outBuffer: outBuffer,
         msgID,
-        sbID,
+        pid,
       });
       done();
     });
@@ -252,7 +252,7 @@ function messageHandler(msg, push, done) {
       message: 'Method not found',
       data: `invalid method: ${method}`,
       msgID,
-      sbID,
+      pid,
     }});
     done();
   }

@@ -15,14 +15,14 @@ window.addEventListener('message', (event) => {
     // save for sending messages back to main thread later
     mainSource = event.source;
     mainOrigin = event.origin;
-    process.pid = event.data.sbID;
+    process.pid = event.data.pid;
     process.argv = event.data.argv || [];
     process.env = event.data.env || {};
 
     console.log('sandbox received _start:',event.data);
     process.stdout.write(`started pid=${process.pid}, argv=${JSON.stringify(process.argv)}, env=${JSON.stringify(process.env)}`);
 
-    event.source.postMessage({pong: true, sbID: event.data.sbID}, event.origin);
+    event.source.postMessage({pong: true, pid: event.data.pid}, event.origin);
   }
 });
 

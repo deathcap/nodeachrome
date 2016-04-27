@@ -11,18 +11,18 @@ function newsb(argv, env) {
   const container = document.getElementById('sandboxes');
 
   const iframe = document.createElement('iframe');
-  const sbID = nextSbID;
+  const pid = nextSbID;
   nextSbID += 1;
 
   if (!env) env = process.env; // inherit the environment
 
-  iframes.set(sbID, iframe);
+  iframes.set(pid, iframe);
 
-  iframe.setAttribute('id', 'sandbox-' + sbID);
+  iframe.setAttribute('id', 'sandbox-' + pid);
   iframe.setAttribute('src', 'sandbox.html');
   iframe.addEventListener('load', (event) => {
-    console.log('sandbox frame load',sbID);
-    iframe.contentWindow.postMessage({cmd: '_start', sbID: sbID, argv, env}, '*');
+    console.log('sandbox frame load',pid);
+    iframe.contentWindow.postMessage({cmd: '_start', pid: pid, argv, env}, '*');
   });
 
   container.appendChild(iframe);
@@ -31,16 +31,16 @@ function newsb(argv, env) {
 }
 
 // Send a message to the sandboxed iframe
-function postSandbox(sbID, msg) {
-  const iframe = iframes.get(sbID);
-  if (!iframe) throw new Error(`no such sandbox: ${sbID}`);
+function postSandbox(pid, msg) {
+  const iframe = iframes.get(pid);
+  if (!iframe) throw new Error(`no such sandbox: ${pid}`);
 
   iframe.contentWindow.postMessage(msg, '*');
 }
 
 // Evaluate code within a given sandbox
-function evalin(sbID, code) {
-  postSandbox(sbID, {cmd: 'eval', code: code});
+function evalin(pid, code) {
+  postSandbox(pid, {cmd: 'eval', code: code});
 }
 
 module.exports = {

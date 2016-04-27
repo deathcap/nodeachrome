@@ -14,7 +14,7 @@ function disconnected(e) {
 
 function recvIncoming(msg) {
   //console.log('received incoming native msg:',msg);
-  postSandbox(msg.sbID, {cmd: 'recvNative', msg: msg});
+  postSandbox(msg.pid, {cmd: 'recvNative', msg: msg});
 }
 
 function connectPort() {
@@ -26,7 +26,7 @@ function connectPort() {
 }
 
 // Send message using Google Chrome Native Messaging API to a native code host
-function sendNative(method, params, msgID, sbID) {
+function sendNative(method, params, msgID, pid) {
 
   const paramsEncoded = [];
   for (let i = 0; i < params.length; ++i) {
@@ -41,7 +41,7 @@ function sendNative(method, params, msgID, sbID) {
     paramsEncoded.push(param);
   }
 
-  const msg = {method, params: paramsEncoded, msgID, sbID};
+  const msg = {method, params: paramsEncoded, msgID, pid};
 
   console.log('sendNative',msg);
 
@@ -64,8 +64,8 @@ window.addEventListener('message', (event) => {
   // Main thread receives sendNative messages from sandbox -> sends them to native host
   if (event.data.cmd === 'sendNative') {
     //console.log('received main thread sendNative event:',event);
-    const sbID = event.data.sbID; // TODO: get sbID from resolving event.origin instead of trusting sandbox to say who it is? if it matters
-    sendNative(event.data.method, event.data.params, event.data.msgID, sbID);
+    const pid = event.data.pid; // TODO: get pid from resolving event.origin instead of trusting sandbox to say who it is? if it matters
+    sendNative(event.data.method, event.data.params, event.data.msgID, pid);
   }
 });
 
