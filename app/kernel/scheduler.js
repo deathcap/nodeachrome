@@ -16,7 +16,7 @@ function spawn(argv, env) {
   const pid = nextPid;
   nextPid += 1;
 
-  if (!env) env = process.env; // inherit the environment
+  if (!env) env = global.ENV; // inherit from kernel TODO: per-process inheritance, forking
 
   iframes.set(pid, iframe);
 

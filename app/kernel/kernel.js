@@ -9,16 +9,8 @@ const spawn = require('./scheduler').spawn;
 const evalin = require('./scheduler').evalin;
 const kill = require('./scheduler').kill;
 
-// Expose globally for debugging
-Object.assign(global, {
-  spawn: spawn,
-  evalin: evalin,
-  kill: kill,
-  process: process, // TODO: don't expose 'process' in kernel, its not really useful, except for env
-});
-
-// Set environment variables here because processes may inherit them
-Object.assign(process.env, {
+// Globally default environment variables, set here since processes inherit them
+const ENV = {
   TERM: 'xterm-256color',
   SHELL: '/bin/sh',
   USER: 'user',
@@ -26,6 +18,14 @@ Object.assign(process.env, {
   PATH: '~/.bin/:/usr/bin/:/bin:/usr/sbin:/sbin:/usr/local/bin',
   PWD: '/',
   HOME: '/home',
+};
+
+// Expose globally for debugging
+Object.assign(global, {
+  spawn: spawn,
+  evalin: evalin,
+  kill: kill,
+  ENV: ENV,
 });
 
 console.log('creating initial sandbox');
