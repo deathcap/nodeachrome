@@ -9,14 +9,17 @@ let nextID = 1;
 let mainSource = null;
 let mainOrigin = null;
 
+let sbID = null; // our sandbox identifier, who we are TODO: global, 'in sandbox' info on process. like process id (pid)
+
 window.addEventListener('message', (event) => {
   if (event.data.cmd === 'ping') {
-    event.source.postMessage({pong: true}, event.origin);
-
     // save for sending messages back to main thread later
     mainSource = event.source;
     mainOrigin = event.origin;
+    sbID = event.data.sbID;
     console.log('sandbox received ping:',event.data);
+
+    event.source.postMessage({pong: true, sbID: event.data.sbID}, event.origin);
   } else if (event.data.cmd === 'recvNative') {
     //console.log('recvNative in sandbox', event.data);
     handleIncoming(event.data.msg);
@@ -24,13 +27,13 @@ window.addEventListener('message', (event) => {
 });
 
 function handleIncoming(msg) {
-  const cb = callbacks.get(msg.id);
+  const cb = callbacks.get(msg.msgID);
   if (!cb) {
-    throw new Error(`received native host message with unexpected id: ${msg.id} in ${JSON.stringify(msg)}`);
+    throw new Error(`received native host message with unexpected id: ${msg.msgID} in ${JSON.stringify(msg)}`);
   }
 
   cb(msg);
-  callbacks.delete(msg.id);
+  callbacks.delete(msg.msgID);
 }
 
 function decodeResponse(response, cb) {
@@ -45,13 +48,13 @@ function decodeResponse(response, cb) {
 
 function proxiedSendNative(method, params, cb) {
   //console.log('proxiedSendNative',method,params);
-  const id = nextID;
+  const msgID = nextID;
   nextID += 1;
 
   // To main thread
-  mainSource.postMessage({cmd: 'sendNative', method, params, id}, mainOrigin);
+  mainSource.postMessage({cmd: 'sendNative', method, params, msgID, sbID}, mainOrigin);
 
-  callbacks.set(id, (response) => decodeResponse(response, cb));
+  callbacks.set(msgID, (response) => decodeResponse(response, cb));
 };
 
 module.exports = proxiedSendNative;

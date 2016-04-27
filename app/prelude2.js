@@ -36,7 +36,8 @@
             };
             // https://github.com/deathcap/webnpm/issues/5 Implement require.resolve
             R.resolve = (module) => {
-                console.log('require.resolve', module);
+                // TODO: actually resolve, https://www.npmjs.com/package/require-resolve
+                //console.log('require.resolve', module);
                 return module;
             };
             modules[name][0].call(m.exports, R
