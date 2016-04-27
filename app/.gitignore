@@ -1,2 +1,2 @@
-bundle-kernel.js
-bundle-userland.js
+kernel/bundle-kernel.js
+userland/bundle-userland.js

@@ -9,7 +9,7 @@ const path = require('path');
 const preludePath = path.join(__dirname, 'prelude2.js');
 
 const builtins = require('browserify/lib/builtins');
-builtins.fs = require.resolve('./fs.js');
+builtins.fs = require.resolve('../userland/fs.js');
 
 // force acorn@3 to get fixes for CSP https://github.com/substack/node-detective/issues/52
 // https://github.com/ternjs/acorn/issues/90  https://github.com/substack/node-detective/pull/64
@@ -27,9 +27,9 @@ fs.readFile(preludePath, 'utf8', (err, prelude) => {
     preludePath: preludePath,
     prelude: prelude,
   };
-  const b = browserify('./kernel.js', opts);
-  b.bundle().pipe(fs.createWriteStream(path.join(__dirname, 'bundle-kernel.js')));
+  const b = browserify('./kernel/kernel.js', opts);
+  b.bundle().pipe(fs.createWriteStream(path.join(__dirname, '../kernel/bundle-kernel.js')));
 
-  const b2 = browserify('./userland.js', opts);
-  b2.bundle().pipe(fs.createWriteStream(path.join(__dirname, 'bundle-userland.js')));
+  const b2 = browserify('./userland/userland.js', opts);
+  b2.bundle().pipe(fs.createWriteStream(path.join(__dirname, '../userland/bundle-userland.js')));
 });

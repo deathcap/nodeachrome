@@ -8,7 +8,7 @@
     "url": "git@github.com:deathcap/nodeachrome.git"
   },
   "scripts": {
-    "start": "node compile.js"
+    "start": "node tools/compile.js"
   },
   "keywords": [],
   "dependencies": {

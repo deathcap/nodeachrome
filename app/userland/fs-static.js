@@ -15,7 +15,7 @@ const STATIC_FILE_DATA = {
   '/node_modules/npm/package.json': new Buffer(JSON.stringify({version: '3.6.0'})),
 
   // cat ./node_modules/browser-pack/_prelude.js
-  // This should match ./prelude2.js (adds require.resolve addition), if the web-based browserify
+  // This should match ../tools/prelude2.js (adds require.resolve addition), if the web-based browserify
   // is to match the node-based browserify bundle output. TODO: refactor to avoid duplication
   '/node_modules/browser-pack/_prelude.js': new Buffer(`//based on https://github.com/substack/browser-pack/blob/01d39894f7168983f66200e727cdaadf881cd39d/prelude.js
 // modules are defined as an array

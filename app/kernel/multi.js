@@ -21,7 +21,7 @@ function spawn(argv, env) {
   iframes.set(pid, iframe);
 
   iframe.setAttribute('id', 'userland-process-' + pid);
-  iframe.setAttribute('src', 'userland.html');
+  iframe.setAttribute('src', '/userland/userland.html');
   iframe.addEventListener('load', (event) => {
     console.log('sandbox frame load',pid);
     iframe.contentWindow.postMessage({cmd: '_start', pid: pid, argv, env}, '*');

@@ -36,20 +36,20 @@ TODO: does the browser actually perform the SSL validation check anyways? I'd th
    */
   process.env['npm_config_strict-ssl'] = 'false';
 
-  var log = require('./node_modules/npm/node_modules/npmlog') // edit: ./node-_modules/npm/node_modules-relative paths
+  var log = require('../node_modules/npm/node_modules/npmlog') // edit: ./node-_modules/npm/node_modules-relative paths
   //log.pause() // will be unpaused when config is loaded. edit: disable
 
   log.info('it worked if it ends with', 'ok')
 
   var path = require('path')
-  var npm = require('./node_modules/npm/node_modules/../lib/npm.js')
-  var npmconf = require('./node_modules/npm/node_modules/../lib/config/core.js')
-  var errorHandler = require('./node_modules/npm/node_modules/../lib/utils/error-handler.js')
+  var npm = require('../node_modules/npm/node_modules/../lib/npm.js')
+  var npmconf = require('../node_modules/npm/node_modules/../lib/config/core.js')
+  var errorHandler = require('../node_modules/npm/node_modules/../lib/utils/error-handler.js')
 
   var configDefs = npmconf.defs
   var shorthands = configDefs.shorthands
   var types = configDefs.types
-  var nopt = require('./node_modules/npm/node_modules/nopt')
+  var nopt = require('../node_modules/npm/node_modules/nopt')
 
   // for reasons I'm not entirely clear with, the process.stderr browser-stdout stream https://github.com/kumavis/browser-stdout/
   // although derives from Writable, does not pass the instanceof check for Stream, at least in the browser:
