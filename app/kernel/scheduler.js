@@ -22,6 +22,10 @@ function spawn(argv, env) {
 
   iframe.setAttribute('id', 'userland-process-' + pid);
   iframe.setAttribute('src', '/userland/userland.html');
+
+  iframe.setAttribute('style', 'border-width: 5px;'); // something to hang onto to drag
+  iframe.setAttribute('draggable', 'true'); // allow picking it up TODO: allow dropping
+
   iframe.addEventListener('load', (event) => {
     console.log('sandbox frame load',pid);
     iframe.contentWindow.postMessage({cmd: '_start', pid: pid, argv, env}, '*');
