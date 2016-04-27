@@ -28,10 +28,10 @@ window.addEventListener('message', (event) => {
   }
 });
 
-function postMessageToKernel(msg) {
+function syscall(msg) {
   kernelSource.postMessage(msg, kernelOrigin);
 }
 
 module.exports = {
-  postMessageToKernel,
+  syscall,
 };

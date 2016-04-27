@@ -3,6 +3,8 @@
 // Extend the process global with some more functionality
 // This augments what is already provided by https://github.com/defunctzombie/node-process/blob/master/browser.js
 
+const syscall = require('./syscall').syscall;
+
 // https://nodejs.org/api/process.html
 process.exit = (code) => {
   process.stderr.write(`\n\nProcess exited with code ${code}\n`);
