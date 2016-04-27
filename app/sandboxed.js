@@ -1,7 +1,9 @@
 'use strict';
 
+// Runs in sandboxed instance
+
 require('shellasync/global'); // export some useful shell-like functions: cat(), ls(), ... using node.js fs async APIs
-require('./more-process');
+require('./process2');
 
 // Expose globally for debugging
 Object.assign(global, {

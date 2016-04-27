@@ -1,6 +1,8 @@
 'use strict';
 
 // Extend the process global with some more functionality
+// This augments what is already provided by https://github.com/defunctzombie/node-process/blob/master/browser.js
+
 // https://nodejs.org/api/process.html
 Object.assign(process.env, {
   TERM: 'xterm-256color',
