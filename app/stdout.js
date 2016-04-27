@@ -21,6 +21,9 @@ class BrowserStdout extends Writable {
       console.error(this.label, output);
     }
 
+    const node = document.createTextNode(output);
+    document.body.appendChild(node);
+
     process.nextTick(cb);
   }
 }
