@@ -1,8 +1,8 @@
 'use strict';
 
 const constants = require('constants');
-//const sendNative = require('./send-native'); // on main thread
-const sendNative = require('./send-native-proxy'); // in sandbox
+//const sendNative = require('./native'); // on main thread
+const sendNative = require('./native-proxy'); // in sandbox
 
 // Node.js fs API implementations, async methods
 // Backed by the native messaging host for local sandboxed OS filesystem access

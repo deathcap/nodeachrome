@@ -1,5 +1,7 @@
 'use strict';
 
+// Chrome platform API to native messaging host
+
 const postUserland = require('./scheduler').postUserland;
 
 const application = 'io.github.deathcap.nodeachrome';

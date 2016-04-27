@@ -3,7 +3,7 @@
 // Main "kernel", manages sandboxes (~processes)
 
 require('./ui')(); // wire up button event handlers
-require('./send-native.js');
+require('./native.js');
 
 const spawn = require('./scheduler').spawn;
 const evalin = require('./scheduler').evalin;
