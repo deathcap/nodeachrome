@@ -1,16 +1,10 @@
 'use strict';
 
+const postSandbox = require('./multi').postSandbox;
+
 const application = 'io.github.deathcap.nodeachrome';
 
 let port = null;
-
-// Send a message to the sandboxed iframe
-// TODO: track which sandbox sends us, send back instead of hardcoding sandbox-0
-function postSandbox(msg, sbID) {
-  const iframe = document.getElementById('sandbox-' + sbID); // TODO: maintain map of sbID -> iframes, populate in newsb(), instead of DOM lookup
-  const targetOrigin = '*';
-  iframe.contentWindow.postMessage(msg, targetOrigin);
-}
 
 function disconnected(e) {
   port = null; // to allow to reconnect if it crashes
