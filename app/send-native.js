@@ -66,7 +66,7 @@ function sendNative(method, params, id) {
 // TODO: refactor with newsb()
 window.addEventListener('load', (event) => {
   console.log('onload');
-  postSandbox({cmd: 'ping'});
+  postSandbox({cmd: 'ping', sandbox_id: 0});
 });
 
 window.addEventListener('message', (event) => {

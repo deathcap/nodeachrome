@@ -21,11 +21,12 @@ function newsb() {
 
   const iframe = document.createElement('iframe');
   iframe.setAttribute('id', 'sandbox-' + nextID);
-  nextID += 1;
   iframe.setAttribute('src', 'sandbox.html');
   container.appendChild(iframe);
 
-  iframe.contentWindow.postMessage({cmd: 'ping'});
+  iframe.contentWindow.postMessage({cmd: 'ping', sandbox_id: nextID}, '*');
+
+  nextID += 1;
 
   return iframe;
 }

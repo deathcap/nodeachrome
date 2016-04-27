@@ -9,6 +9,8 @@ let nextID = 1;
 let mainSource = null;
 let mainOrigin = null;
 
+let ourSandboxID = null;
+
 window.addEventListener('message', (event) => {
   if (event.data.cmd === 'ping') {
     event.source.postMessage({pong: true}, event.origin);
@@ -16,6 +18,7 @@ window.addEventListener('message', (event) => {
     // save for sending messages back to main thread later
     mainSource = event.source;
     mainOrigin = event.origin;
+    ourSandboxID = event.data.sandbox_id;
     console.log('sandbox received ping:',event.data);
   } else if (event.data.cmd === 'recvNative') {
     //console.log('recvNative in sandbox', event.data);
@@ -49,6 +52,7 @@ function proxiedSendNative(method, params, cb) {
   nextID += 1;
 
   // To main thread
+  // TODO: send ourSandboxID
   mainSource.postMessage({cmd: 'sendNative', method, params, id}, mainOrigin);
 
   callbacks.set(id, (response) => decodeResponse(response, cb));
