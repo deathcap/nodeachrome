@@ -62,13 +62,6 @@ function sendNative(method, params, msgID, sbID) {
   //chrome.runtime.sendNativeMessage(application, msg, (response) => decodeResponse(response, cb));
 }
 
-// When the page loads, first contact the sandbox frame so it gets our event source
-// TODO: refactor with newsb()
-window.addEventListener('load', (event) => {
-  console.log('onload');
-  postSandbox({cmd: 'ping', sbID: 0}, 0);
-});
-
 window.addEventListener('message', (event) => {
   //console.log('received sandbox iframe message:',event);
   //console.log('main event data:',event.data);

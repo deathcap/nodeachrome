@@ -14,19 +14,23 @@ function evalsb(code) {
   document.getElementById('sandbox-0').contentWindow.postMessage({cmd: 'eval', code: code}, '*');
 }
 
-// Create a new sandboxed execution context: TODO: use only this, remove hardcoded sandbox-0
-let nextSbID = 1;
+// Create a new sandboxed execution context
+let nextSbID = 0;
 function newsb() {
   const container = document.getElementById('sandboxes');
 
   const iframe = document.createElement('iframe');
-  iframe.setAttribute('id', 'sandbox-' + nextSbID);
-  iframe.setAttribute('src', 'sandbox.html');
-  container.appendChild(iframe);
-
-  iframe.contentWindow.postMessage({cmd: 'ping', sbID: nextSbID}, '*');
-
+  const sbID = nextSbID;
   nextSbID += 1;
+
+  iframe.setAttribute('id', 'sandbox-' + sbID);
+  iframe.setAttribute('src', 'sandbox.html');
+  iframe.addEventListener('load', (event) => {
+    console.log('sandbox frame load',sbID);
+    iframe.contentWindow.postMessage({cmd: 'ping', sbID: sbID}, '*');
+  });
+
+  container.appendChild(iframe);
 
   return iframe;
 }
@@ -39,3 +43,6 @@ function evalin(n, code) {
 }
 
 require('./send-native.js');
+
+console.log('creating initial sandbox');
+newsb(); // when page loads, create first sandbox
