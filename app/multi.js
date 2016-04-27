@@ -8,6 +8,7 @@ let iframes = new Map();
 
 // Create a new "userland" sandboxed execution context, previously 'newsb',
 // like Unix spawn/exec (close enough) or posix_spawn/system
+// TODO: Unix-ish standard Node API to implement instead? process, os? exec? Found it: https://nodejs.org/api/child_process.html exec!
 function spawn(argv, env) {
   const container = document.getElementById('userland-processes');
 

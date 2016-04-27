@@ -53,29 +53,78 @@ window for sending commands to the native host. For the full JavaScript environm
 open the JavaScript console. Use `evalsb()` to evaluate code in the eval sandbox and
 interact with the console by typing JavaScript, see below for APIs.
 
-## fs sandbox
+## api
+
+### process
+
+The Nodeachrome app is split into "kernel" and "userland", similar to textbook operating system architecture.
+The kernel manages userland "processes", holding additional privileges over userland (access to the
+native host, Chrome platform API, arbitrary XHR), but most code is expected to execute in userland processes.
+
+When the kernel boots up, it will `spawn()` its first process. This creates a new HTML5 iframe with a unique
+origin, aka [sandbox](https://developer.chrome.com/extensions/sandboxingEval). JavaScript code within the
+process runs within its own isolated context, independent from other processes and the kernel, even having
+its own global variables. It can only communicate by posting messages to the kernel, or writing to the
+HTML document within its iframe.
+
+You can debug the kernel by invoking the JavaScript console on kernel.html, or on a userland process
+by right-clicking an iframe and chosing "Inspect". Note that userland processes are much more interesting,
+the kernel is very minimal, by design.
+
+Node.js [process](https://nodejs.org/api/process.html) API is partially supported,
+using the default browserify [process/browser](https://www.npmjs.com/package/process), plus augmented with
+additional functionality in ./process2.js.
+
+`process.pid` is the process ID in userland, uniquely identifying each sandbox. Starts at 1, increments sequentially.
+
+`process.env` is an environment variable dictionary, accessible in the kernel, and inherited in
+userland processes.
+
+`process.stdout` and `process.stderr` log to `console.log` and `console.error`, respectively,
+similar to [browser-stdout](https://www.npmjs.com/package/browser-stdout). They also write to the
+iframe document body, as preformatted text.
+
+### fs
 
 The `sandbox/` directory is exposed through the Chrome extension via the native host. You can use
 your normal text editors and file management tools to manipulate this directory, and use it from
 Nodeachrome with (a subset of, the mostly-compatible) [Node fs API](https://nodejs.org/api/fs.html).
+There is no "web filesystem", or localStorage, or a virtual cloud filesystem here, you get real
+filesystem access, within the sandbox directory.
+
+Asynchronous methods use the aforementioned `sandbox/` directory on disk, via the native host.
+Synchronous methods are special-cased to return hardcoded results.
 
 [shellasync](https://www.npmjs.com/package/shellasync) is included on the global object providing
-`ls()`, `cat()`, etc. shell-like functions, for interactive convenience in using `fs`.
+`ls()`, `cat()`, etc. shell-like functions, for interactive convenience in using `fs`
 
-## api
+### net
 
-* Most [browserify builtins](https://github.com/substack/node-browserify/blob/master/lib/builtins.js), exposed on global `g`
-* [fs](https://nodejs.org/api/fs.html)
- * async methods using native host to fs sandbox (see above)
- * sync methods return hardcoded results
-* [http](https://nodejs.org/api/http.html), [https](https://nodejs.org/api/https.html) through browserify default [stream-http](http://npmjs.com/package/stream-http) and [https-browserify](http://npmjs.com/package/https-browserify), but allows any origin (unlike a website) due to permissions: `http://*/`, `https://*/` 
-* [process](https://nodejs.org/api/process.html)
- * default browserify [process/browser](https://www.npmjs.com/package/process) + augmented ./more-process.js
- * process.stdout, stderr from [browser-stdout](https://www.npmjs.com/package/browser-stdout)
+The Node.js [net](https://nodejs.org/api/net.html) socket API is not supported, but apps should
+be able to interact with the network using the [http](https://nodejs.org/api/http.html) and
+[https](https://nodejs.org/api/https.html) APIs,
+through the browserify default replacements
+[stream-http](http://npmjs.com/package/stream-http) and [https-browserify](http://npmjs.com/package/https-browserify),
+implemented using [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
+and/or [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+
+Unlike websites, Chrome extensions are not necessarily bound by the Same-Origin Policy on network
+requests. Nodeachrome's `manifest.json` specifies permissions `http://*/`, `https://*/`, so it should
+be able to access third-party websites like the NPM registry server. TODO: however, this is currently broken due to https://github.com/deathcap/nodeachrome/issues/7
+
+### other
+
+* Most [browserify builtins](https://github.com/substack/node-browserify/blob/master/lib/builtins.js) are exposed on the global object
 * require.resolve(x) returns x, modified browserify prelude in prelude2.js
-* [browserify](http://browserify.org) API (TODO: fix `g.browserify('foo.js').bundle().pipe(g.process.stdout)`)
+
+
+## tools
+
+Bundled tools intended to run under this project: (note: may be broken)
+
+* [browserify](http://browserify.org) API (example: `browserify('foo.js').bundle().pipe(process.stdout)`)
 * [npm](https://www.npmjs.com) API
- * `npm_cli`, simulates npm(1) command-line, example: `g.npm_cli(['/bin/node', 'npm', 'view', 'voxel-engine'])`
+ * `npm_cli`, simulates npm(1) command-line, example: `npm_cli(['/bin/node', 'npm', 'view', 'voxel-engine'])` (TODO: fix CORS)
 
 ## License
 
