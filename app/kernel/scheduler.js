@@ -26,21 +26,17 @@ function spawn(argv, env) {
   iframe.setAttribute('id', 'userland-process-' + pid);
   iframe.setAttribute('src', '/userland/userland.html');
 
-  iframe.setAttribute('style', 'border-width: 5px;'); // something to hang onto to drag
+  iframe.setAttribute('style', 'border-width: 5px; position: absolute; top: 200px; left: 0; border-radius: 4px; padding: 8px;');
   iframe.setAttribute('draggable', 'true'); // allow picking it up TODO: allow dropping
 
   iframe.addEventListener('dragstart', (event) => {
-    draggingElement = event.srcElement;
-    console.log('dragstart',draggingElement);
+    const style = window.getComputedStyle(event.target, null);
+    event.dataTransfer.setData('text/plain', iframe.getAttribute('id') + ',' +
+      (parseInt(style.getPropertyValue("left"),10) - event.clientX) + ',' + (parseInt(style.getPropertyValue("top"),10) - event.clientY));
   });
   iframe.addEventListener('dragend', (event) => {
-    draggingElement = null;
-    console.log('dragend',draggingElement);
+    console.log('dragend',event);
   });
-  iframe.addEventListener('dragover', (event) => {
-    event.preventDefault();
-  });
-
   iframe.addEventListener('load', (event) => {
     console.log('sandbox frame load',pid);
     iframe.contentWindow.postMessage({cmd: '_start', pid: pid, argv, env}, '*');
@@ -51,13 +47,19 @@ function spawn(argv, env) {
   return iframe;
 }
 
-window.addEventListener('mousemove', (event) => {
-  console.log('mousemove',draggingElement);
-  if (draggingElement) {
-    draggingElement.style.top = event.clientX + 'px';
-    draggingElement.style.left = event.clientY + 'px';
-  }
-});
+document.body.addEventListener('dragover', (event) => {
+  event.preventDefault();
+  return false;
+}, false);
+
+document.body.addEventListener('drop', (event) => {
+  const offset = event.dataTransfer.getData('text/plain').split(',');
+  const dm = document.getElementById(offset[0]);
+  dm.style.left = (event.clientX + parseInt(offset[1],10)) + 'px';
+  dm.style.top = (event.clientY + parseInt(offset[2],10)) + 'px';
+  event.preventDefault();
+  return false;
+}, false);
 
 // Send a message to the sandboxed iframe, aka the userland
 function postUserland(pid, msg) {
