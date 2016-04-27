@@ -5,7 +5,7 @@
 
 // https://nodejs.org/api/process.html
 process.exit = (code) => {
-  console.log(`process.exit(${code})`);
+  process.stderr.write(`\n\nProcess exited with code ${code}\n`);
 };
 Object.assign(process.versions, {
   node: '4.2.4', // simulated node.js compatibility level version (optimistic)

@@ -7,12 +7,14 @@ require('./native.js');
 
 const spawn = require('./scheduler').spawn;
 const evalin = require('./scheduler').evalin;
+const kill = require('./scheduler').kill;
 
 // Expose globally for debugging
 Object.assign(global, {
   spawn: spawn,
   evalin: evalin,
-  process: process,
+  kill: kill,
+  process: process, // TODO: don't expose 'process' in kernel, its not really useful, except for env
 });
 
 // Set environment variables here because processes may inherit them

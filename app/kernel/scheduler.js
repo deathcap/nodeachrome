@@ -35,7 +35,8 @@ function spawn(argv, env) {
 // Send a message to the sandboxed iframe, aka the userland
 function postUserland(pid, msg) {
   const iframe = iframes.get(pid);
-  if (!iframe) throw new Error(`no such sandbox: ${pid}`);
+  if (!iframe) throw new Error(`no such process: ${pid}`);
+  if (!iframe.contentWindow) throw new Error(`no such process, terminated: ${pid}`);
 
   iframe.contentWindow.postMessage(msg, '*');
 }
@@ -45,8 +46,21 @@ function evalin(pid, code) {
   postUserland(pid, {cmd: 'eval', code: code});
 }
 
+function kill(pid, signal) {
+  //TODO: SIGTERM etc. postUserland(pid, {cmd: 'signal', signal: signal});
+  //if (signal === 'SIGKILL') {
+  
+    const iframe = iframes.get(pid);
+    iframe.parentNode.removeChild(iframe);
+    iframes.delete(pid);
+    console.log(`Killed ${pid}`);
+
+  //}
+}
+
 module.exports = {
   spawn,
   evalin,
   postUserland,
+  kill,
 };
