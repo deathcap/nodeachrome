@@ -3,7 +3,7 @@
 // Multi-sandbox support
 // Maintains multiple independent execution contexts for JavaScript, using sandboxed iframes (unique origins)
 
-let nextSbID = 0;
+let nextSbID = 1;
 let iframes = new Map();
 
 // Create a new sandboxed execution context
