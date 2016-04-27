@@ -3,14 +3,18 @@
 // Multi-sandbox support
 // Maintains multiple independent execution contexts for JavaScript, using sandboxed iframes (unique origins)
 
-// Create a new sandboxed execution context
 let nextSbID = 0;
+let iframes = new Map();
+
+// Create a new sandboxed execution context
 function newsb() {
   const container = document.getElementById('sandboxes');
 
   const iframe = document.createElement('iframe');
   const sbID = nextSbID;
   nextSbID += 1;
+
+  iframes.set(sbID, iframe);
 
   iframe.setAttribute('id', 'sandbox-' + sbID);
   iframe.setAttribute('src', 'sandbox.html');
@@ -24,20 +28,17 @@ function newsb() {
   return iframe;
 }
 
-// Evaluate code within a given sandbox
-function evalin(n, code) {
-  const iframe = document.getElementById('sandbox-' + n);
-  if (!iframe) throw new Error(`no such sandbox: ${n}`);
+// Send a message to the sandboxed iframe
+function postSandbox(sbID, msg) {
+  const iframe = iframes.get(sbID);
+  if (!iframe) throw new Error(`no such sandbox: ${sbID}`);
 
-  iframe.contentWindow.postMessage({cmd: 'eval', code: code}, '*');
+  iframe.contentWindow.postMessage(msg, '*');
 }
 
-// Send a message to the sandboxed iframe
-// TODO: track which sandbox sends us, send back instead of hardcoding sandbox-0
-function postSandbox(msg, sbID) {
-  const iframe = document.getElementById('sandbox-' + sbID); // TODO: maintain map of sbID -> iframes, populate in newsb(), instead of DOM lookup
-  const targetOrigin = '*';
-  iframe.contentWindow.postMessage(msg, targetOrigin);
+// Evaluate code within a given sandbox
+function evalin(sbID, code) {
+  postSandbox(sbID, {cmd: 'eval', code: code});
 }
 
 

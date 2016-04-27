@@ -14,7 +14,7 @@ function disconnected(e) {
 
 function recvIncoming(msg) {
   //console.log('received incoming native msg:',msg);
-  postSandbox({cmd: 'recvNative', msg: msg}, msg.sbID);
+  postSandbox(msg.sbID, {cmd: 'recvNative', msg: msg});
 }
 
 function connectPort() {
