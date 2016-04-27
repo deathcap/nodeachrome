@@ -5,8 +5,8 @@
 require('./ui')(); // wire up button event handlers
 require('./send-native.js');
 
-const spawn = require('./multi').spawn;
-const evalin = require('./multi').evalin;
+const spawn = require('./scheduler').spawn;
+const evalin = require('./scheduler').evalin;
 
 // Expose globally for debugging
 Object.assign(global, {

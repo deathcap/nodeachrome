@@ -1,7 +1,7 @@
 'use strict';
 
-// Multi-sandbox support
-// Maintains multiple independent execution contexts for JavaScript, using sandboxed iframes (unique origins)
+// Kernel "scheduler" (analogous to OS), manages processes
+// Maintains multiple independent execution contexts (processes) for JavaScript, using sandboxed iframes (unique origins)
 
 let nextPid = 1;
 let iframes = new Map();

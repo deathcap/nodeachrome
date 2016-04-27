@@ -1,6 +1,6 @@
 'use strict';
 
-const postUserland = require('./multi').postUserland;
+const postUserland = require('./scheduler').postUserland;
 
 const application = 'io.github.deathcap.nodeachrome';
 

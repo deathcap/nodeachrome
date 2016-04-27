@@ -1,5 +1,6 @@
 'use strict';
 
+// "System calls", userland -> kernel
 // Code below runs within an individual sandbox, talks back to 'kernel' (= main thread), in multi.js
 
 let kernelSource = null;
