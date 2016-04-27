@@ -7,12 +7,14 @@ let nextSbID = 1;
 let iframes = new Map();
 
 // Create a new sandboxed execution context
-function newsb() {
+function newsb(argv, env) {
   const container = document.getElementById('sandboxes');
 
   const iframe = document.createElement('iframe');
   const sbID = nextSbID;
   nextSbID += 1;
+
+  if (!env) env = process.env; // inherit the environment
 
   iframes.set(sbID, iframe);
 
@@ -20,7 +22,7 @@ function newsb() {
   iframe.setAttribute('src', 'sandbox.html');
   iframe.addEventListener('load', (event) => {
     console.log('sandbox frame load',sbID);
-    iframe.contentWindow.postMessage({cmd: 'ping', sbID: sbID}, '*');
+    iframe.contentWindow.postMessage({cmd: '_start', sbID: sbID, argv, env}, '*');
   });
 
   container.appendChild(iframe);

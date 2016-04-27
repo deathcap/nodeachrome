@@ -9,12 +9,18 @@ let mainOrigin = null;
 process.pid = null;
 
 window.addEventListener('message', (event) => {
-  if (event.data.cmd === 'ping') {
+  if (event.data.cmd === '_start') {
+    // Start a new sandbox (like _start in C or Unix, runs before main)
+
     // save for sending messages back to main thread later
     mainSource = event.source;
     mainOrigin = event.origin;
     process.pid = event.data.sbID;
-    console.log('sandbox received ping:',event.data);
+    process.argv = event.data.argv || [];
+    process.env = event.data.env || {};
+
+    console.log('sandbox received _start:',event.data);
+    process.stdout.write(`started pid=${process.pid}, argv=${JSON.stringify(process.argv)}, env=${JSON.stringify(process.env)}`);
 
     event.source.postMessage({pong: true, sbID: event.data.sbID}, event.origin);
   }
