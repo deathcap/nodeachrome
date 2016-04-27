@@ -1,5 +1,7 @@
 'use strict';
 
+// Main "kernel", manages sandboxes (~processes)
+
 require('./ui')(); // wire up button event handlers
 require('./send-native.js');
 
