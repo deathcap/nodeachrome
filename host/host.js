@@ -52,17 +52,18 @@ process.stdin
   .pipe(output)
   .pipe(process.stdout);
 
-function encodeResult(err, data, msgID) {
+function encodeResult(err, data, msgID, sbID) {
   if (err) {
     return {error:
              {
                code: err.errno, // must be an integer, but err.code is a string like 'ENOENT'
                message: err.toString(),
              },
-             msgID: msgID,
+             msgID,
+             sbID,
            };
   } else {
-    return {result:data, msgID:msgID};
+    return {result: data, msgID, sbID};
   }
 }
 
@@ -70,11 +71,12 @@ function messageHandler(msg, push, done) {
   const method = msg.method;
   const params = msg.params;
   const msgID = msg.msgID;
+  const sbID = msg.sbID;
 
   console.error('received',msg);
 
   function cb(err, data) {
-    const response = encodeResult(err, data, msgID);
+    const response = encodeResult(err, data, msgID, sbID);
     console.error('sending',response);
     push(response);
     done();
@@ -239,7 +241,8 @@ function messageHandler(msg, push, done) {
       push({
         result: bytesRead,
         outBuffer: outBuffer,
-        msgID: msgID,
+        msgID,
+        sbID,
       });
       done();
     });
@@ -248,7 +251,8 @@ function messageHandler(msg, push, done) {
       code: -32601, // defined in http://www.jsonrpc.org/specification#response_object
       message: 'Method not found',
       data: `invalid method: ${method}`,
-      msgID: msgID,
+      msgID,
+      sbID,
     }});
     done();
   }

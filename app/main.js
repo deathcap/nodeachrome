@@ -15,18 +15,18 @@ function evalsb(code) {
 }
 
 // Create a new sandboxed execution context: TODO: use only this, remove hardcoded sandbox-0
-let nextID = 1;
+let nextSbID = 1;
 function newsb() {
   const container = document.getElementById('sandboxes');
 
   const iframe = document.createElement('iframe');
-  iframe.setAttribute('id', 'sandbox-' + nextID);
+  iframe.setAttribute('id', 'sandbox-' + nextSbID);
   iframe.setAttribute('src', 'sandbox.html');
   container.appendChild(iframe);
 
-  iframe.contentWindow.postMessage({cmd: 'ping', sandbox_id: nextID}, '*');
+  iframe.contentWindow.postMessage({cmd: 'ping', sbID: nextSbID}, '*');
 
-  nextID += 1;
+  nextSbID += 1;
 
   return iframe;
 }

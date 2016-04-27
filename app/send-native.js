@@ -32,7 +32,7 @@ function connectPort() {
 }
 
 // Send message using Google Chrome Native Messaging API to a native code host
-function sendNative(method, params, msgID) {
+function sendNative(method, params, msgID, sbID) {
 
   const paramsEncoded = [];
   for (let i = 0; i < params.length; ++i) {
@@ -47,7 +47,7 @@ function sendNative(method, params, msgID) {
     paramsEncoded.push(param);
   }
 
-  const msg = {method, params: paramsEncoded, msgID};
+  const msg = {method, params: paramsEncoded, msgID, sbID};
 
   console.log('sendNative',msg);
 
@@ -66,7 +66,7 @@ function sendNative(method, params, msgID) {
 // TODO: refactor with newsb()
 window.addEventListener('load', (event) => {
   console.log('onload');
-  postSandbox({cmd: 'ping', sandbox_id: 0});
+  postSandbox({cmd: 'ping', sbID: 0});
 });
 
 window.addEventListener('message', (event) => {
@@ -77,7 +77,8 @@ window.addEventListener('message', (event) => {
   // Main thread receives sendNative messages from sandbox -> sends them to native host
   if (event.data.cmd === 'sendNative') {
     //console.log('received main thread sendNative event:',event);
-    sendNative(event.data.method, event.data.params, event.data.msgID);
+    const sbID = event.data.sbID; // TODO: get sbID from resolving event.origin instead of trusting sandbox to say who it is? if it matters
+    sendNative(event.data.method, event.data.params, event.data.msgID, sbID);
   }
 });
 

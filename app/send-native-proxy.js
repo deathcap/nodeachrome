@@ -9,17 +9,17 @@ let nextID = 1;
 let mainSource = null;
 let mainOrigin = null;
 
-let ourSandboxID = null;
+let sbID = null; // our sandbox identifier, who we are TODO: global, 'in sandbox' info on process. like process id (pid)
 
 window.addEventListener('message', (event) => {
   if (event.data.cmd === 'ping') {
-    event.source.postMessage({pong: true}, event.origin);
-
     // save for sending messages back to main thread later
     mainSource = event.source;
     mainOrigin = event.origin;
-    ourSandboxID = event.data.sandbox_id;
+    sbID = event.data.sbID;
     console.log('sandbox received ping:',event.data);
+
+    event.source.postMessage({pong: true, sbID: event.data.sbID}, event.origin);
   } else if (event.data.cmd === 'recvNative') {
     //console.log('recvNative in sandbox', event.data);
     handleIncoming(event.data.msg);
@@ -52,8 +52,7 @@ function proxiedSendNative(method, params, cb) {
   nextID += 1;
 
   // To main thread
-  // TODO: send ourSandboxID
-  mainSource.postMessage({cmd: 'sendNative', method, params, msgID}, mainOrigin);
+  mainSource.postMessage({cmd: 'sendNative', method, params, msgID, sbID}, mainOrigin);
 
   callbacks.set(msgID, (response) => decodeResponse(response, cb));
 };
