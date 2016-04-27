@@ -6,6 +6,9 @@
 let nextPid = 1;
 let iframes = new Map();
 
+
+let draggingElement = null;
+
 // Create a new "userland" sandboxed execution context, previously 'newsb',
 // like Unix spawn/exec (close enough) or posix_spawn/system
 // TODO: Unix-ish standard Node API to implement instead? process, os? exec? Found it: https://nodejs.org/api/child_process.html exec!
@@ -26,6 +29,18 @@ function spawn(argv, env) {
   iframe.setAttribute('style', 'border-width: 5px;'); // something to hang onto to drag
   iframe.setAttribute('draggable', 'true'); // allow picking it up TODO: allow dropping
 
+  iframe.addEventListener('dragstart', (event) => {
+    draggingElement = event.srcElement;
+    console.log('dragstart',draggingElement);
+  });
+  iframe.addEventListener('dragend', (event) => {
+    draggingElement = null;
+    console.log('dragend',draggingElement);
+  });
+  iframe.addEventListener('dragover', (event) => {
+    event.preventDefault();
+  });
+
   iframe.addEventListener('load', (event) => {
     console.log('sandbox frame load',pid);
     iframe.contentWindow.postMessage({cmd: '_start', pid: pid, argv, env}, '*');
@@ -35,6 +50,14 @@ function spawn(argv, env) {
 
   return iframe;
 }
+
+window.addEventListener('mousemove', (event) => {
+  console.log('mousemove',draggingElement);
+  if (draggingElement) {
+    draggingElement.style.top = event.clientX + 'px';
+    draggingElement.style.left = event.clientY + 'px';
+  }
+});
 
 // Send a message to the sandboxed iframe, aka the userland
 function postUserland(pid, msg) {
