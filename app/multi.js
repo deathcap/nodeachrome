@@ -41,7 +41,6 @@ function evalin(sbID, code) {
   postSandbox(sbID, {cmd: 'eval', code: code});
 }
 
-
 module.exports = {
   newsb,
   evalin,
