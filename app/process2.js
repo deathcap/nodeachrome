@@ -4,15 +4,6 @@
 // This augments what is already provided by https://github.com/defunctzombie/node-process/blob/master/browser.js
 
 // https://nodejs.org/api/process.html
-Object.assign(process.env, {
-  TERM: 'xterm-256color',
-  SHELL: '/bin/sh',
-  USER: 'user',
-  LOGNAME: 'user',
-  PATH: '~/.bin/:/usr/bin/:/bin:/usr/sbin:/sbin:/usr/local/bin',
-  PWD: '/',
-  HOME: '/home',
-});
 process.exit = (code) => {
   console.log(`process.exit(${code})`);
 };
