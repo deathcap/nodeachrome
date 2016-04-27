@@ -30,6 +30,6 @@ fs.readFile(preludePath, 'utf8', (err, prelude) => {
   const b = browserify('./kernel.js', opts);
   b.bundle().pipe(fs.createWriteStream(path.join(__dirname, 'bundle-kernel.js')));
 
-  const b2 = browserify('./sandboxed.js', opts);
-  b2.bundle().pipe(fs.createWriteStream(path.join(__dirname, 'bundle-sandboxed.js')));
+  const b2 = browserify('./userland.js', opts);
+  b2.bundle().pipe(fs.createWriteStream(path.join(__dirname, 'bundle-userland.js')));
 });

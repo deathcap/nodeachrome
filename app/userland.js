@@ -1,6 +1,6 @@
 'use strict';
 
-// Runs in sandboxed instance
+// "Userland" process, runs in sandbox
 
 require('shellasync/global'); // export some useful shell-like functions: cat(), ls(), ... using node.js fs async APIs
 require('./process2');

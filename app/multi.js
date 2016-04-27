@@ -6,9 +6,10 @@
 let nextPid = 1;
 let iframes = new Map();
 
-// Create a new sandboxed execution context, previously 'newsb', like Unix spawn/exec (close enough) or posix_spawn/system
+// Create a new "userland" sandboxed execution context, previously 'newsb',
+// like Unix spawn/exec (close enough) or posix_spawn/system
 function spawn(argv, env) {
-  const container = document.getElementById('sandboxes');
+  const container = document.getElementById('userland-processes');
 
   const iframe = document.createElement('iframe');
   const pid = nextPid;
@@ -18,8 +19,8 @@ function spawn(argv, env) {
 
   iframes.set(pid, iframe);
 
-  iframe.setAttribute('id', 'sandbox-' + pid);
-  iframe.setAttribute('src', 'sandbox.html');
+  iframe.setAttribute('id', 'userland-process-' + pid);
+  iframe.setAttribute('src', 'userland.html');
   iframe.addEventListener('load', (event) => {
     console.log('sandbox frame load',pid);
     iframe.contentWindow.postMessage({cmd: '_start', pid: pid, argv, env}, '*');
@@ -30,8 +31,8 @@ function spawn(argv, env) {
   return iframe;
 }
 
-// Send a message to the sandboxed iframe
-function postSandbox(pid, msg) {
+// Send a message to the sandboxed iframe, aka the userland
+function postUserland(pid, msg) {
   const iframe = iframes.get(pid);
   if (!iframe) throw new Error(`no such sandbox: ${pid}`);
 
@@ -40,11 +41,11 @@ function postSandbox(pid, msg) {
 
 // Evaluate code within a given sandbox
 function evalin(pid, code) {
-  postSandbox(pid, {cmd: 'eval', code: code});
+  postUserland(pid, {cmd: 'eval', code: code});
 }
 
 module.exports = {
   spawn,
   evalin,
-  postSandbox,
+  postUserland,
 };

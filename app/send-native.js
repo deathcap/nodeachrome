@@ -1,6 +1,6 @@
 'use strict';
 
-const postSandbox = require('./multi').postSandbox;
+const postUserland = require('./multi').postUserland;
 
 const application = 'io.github.deathcap.nodeachrome';
 
@@ -14,7 +14,7 @@ function disconnected(e) {
 
 function recvIncoming(msg) {
   //console.log('received incoming native msg:',msg);
-  postSandbox(msg.pid, {cmd: 'recvNative', msg: msg});
+  postUserland(msg.pid, {cmd: 'recvNative', msg: msg});
 }
 
 function connectPort() {

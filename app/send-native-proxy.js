@@ -6,7 +6,7 @@
 let callbacks = new Map();
 let nextID = 1;
 
-const postMessageToKernel = require('./multi-sandboxed').postMessageToKernel; // also registers handler
+const postMessageToKernel = require('./multi-userland').postMessageToKernel; // also registers handler
 
 window.addEventListener('message', (event) => {
   if (event.data.cmd === 'recvNative') {
