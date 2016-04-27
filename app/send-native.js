@@ -6,8 +6,8 @@ let port = null;
 
 // Send a message to the sandboxed iframe
 // TODO: track which sandbox sends us, send back instead of hardcoding sandbox-0
-function postSandbox(msg) {
-  const iframe = document.getElementById('sandbox-0');
+function postSandbox(msg, sbID) {
+  const iframe = document.getElementById('sandbox-' + sbID); // TODO: maintain map of sbID -> iframes, populate in newsb(), instead of DOM lookup
   const targetOrigin = '*';
   iframe.contentWindow.postMessage(msg, targetOrigin);
 }
@@ -20,7 +20,7 @@ function disconnected(e) {
 
 function recvIncoming(msg) {
   //console.log('received incoming native msg:',msg);
-  postSandbox({cmd: 'recvNative', msg: msg});
+  postSandbox({cmd: 'recvNative', msg: msg}, msg.sbID);
 }
 
 function connectPort() {
@@ -66,7 +66,7 @@ function sendNative(method, params, msgID, sbID) {
 // TODO: refactor with newsb()
 window.addEventListener('load', (event) => {
   console.log('onload');
-  postSandbox({cmd: 'ping', sbID: 0});
+  postSandbox({cmd: 'ping', sbID: 0}, 0);
 });
 
 window.addEventListener('message', (event) => {
