@@ -38,5 +38,5 @@ process.binding = (module) => {
 Object.defineProperty(process, 'title', {
   //get: () => document.title,
   get: () => 'browser', // some code relies on it
-  set: (title) => document.title = title,
+  set: (title) => document.getElementById('title').innerText = document.title = title,
 });
