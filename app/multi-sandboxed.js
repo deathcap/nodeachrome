@@ -1,20 +1,20 @@
 'use strict';
 
-// Code below runs within an individual sandbox, talks back to main (in multi.js)
+// Code below runs within an individual sandbox, talks back to 'kernel' (= main thread), in multi.js
 
-let mainSource = null;
-let mainOrigin = null;
+let kernelSource = null;
+let kernelOrigin = null;
 
 // our sandbox identifier, who we are. global _per sandbox_ - basically like a Unix pid
 process.pid = null;
 
 window.addEventListener('message', (event) => {
   if (event.data.cmd === '_start') {
-    // Start a new sandbox (like _start in C or Unix, runs before main)
+    // Start a new sandbox (like _start in C or Unix, runs before kernel)
 
-    // save for sending messages back to main thread later
-    mainSource = event.source;
-    mainOrigin = event.origin;
+    // save for sending messages back to kernel thread later
+    kernelSource = event.source;
+    kernelOrigin = event.origin;
     process.pid = event.data.pid;
     process.argv = event.data.argv || [];
     process.env = event.data.env || {};
@@ -26,11 +26,10 @@ window.addEventListener('message', (event) => {
   }
 });
 
-function postMessageToMain(msg) {
-  // To main thread
-  mainSource.postMessage(msg, mainOrigin);
+function postMessageToKernel(msg) {
+  kernelSource.postMessage(msg, kernelOrigin);
 }
 
 module.exports = {
-  postMessageToMain,
+  postMessageToKernel,
 };

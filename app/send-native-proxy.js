@@ -6,7 +6,7 @@
 let callbacks = new Map();
 let nextID = 1;
 
-const postMessageToMain = require('./multi-sandboxed').postMessageToMain; // also registers handler
+const postMessageToKernel = require('./multi-sandboxed').postMessageToKernel; // also registers handler
 
 window.addEventListener('message', (event) => {
   if (event.data.cmd === 'recvNative') {
@@ -41,7 +41,7 @@ function proxiedSendNative(method, params, cb) {
   nextID += 1;
 
   // To main thread
-  postMessageToMain({cmd: 'sendNative', method, params, msgID, pid: process.pid});
+  postMessageToKernel({cmd: 'sendNative', method, params, msgID, pid: process.pid});
 
   callbacks.set(msgID, (response) => decodeResponse(response, cb));
 };
