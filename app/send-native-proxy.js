@@ -27,13 +27,13 @@ window.addEventListener('message', (event) => {
 });
 
 function handleIncoming(msg) {
-  const cb = callbacks.get(msg.id);
+  const cb = callbacks.get(msg.msgID);
   if (!cb) {
-    throw new Error(`received native host message with unexpected id: ${msg.id} in ${JSON.stringify(msg)}`);
+    throw new Error(`received native host message with unexpected id: ${msg.msgID} in ${JSON.stringify(msg)}`);
   }
 
   cb(msg);
-  callbacks.delete(msg.id);
+  callbacks.delete(msg.msgID);
 }
 
 function decodeResponse(response, cb) {
@@ -48,14 +48,14 @@ function decodeResponse(response, cb) {
 
 function proxiedSendNative(method, params, cb) {
   //console.log('proxiedSendNative',method,params);
-  const id = nextID;
+  const msgID = nextID;
   nextID += 1;
 
   // To main thread
   // TODO: send ourSandboxID
-  mainSource.postMessage({cmd: 'sendNative', method, params, id}, mainOrigin);
+  mainSource.postMessage({cmd: 'sendNative', method, params, msgID}, mainOrigin);
 
-  callbacks.set(id, (response) => decodeResponse(response, cb));
+  callbacks.set(msgID, (response) => decodeResponse(response, cb));
 };
 
 module.exports = proxiedSendNative;

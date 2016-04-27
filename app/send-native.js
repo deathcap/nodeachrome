@@ -32,7 +32,7 @@ function connectPort() {
 }
 
 // Send message using Google Chrome Native Messaging API to a native code host
-function sendNative(method, params, id) {
+function sendNative(method, params, msgID) {
 
   const paramsEncoded = [];
   for (let i = 0; i < params.length; ++i) {
@@ -47,7 +47,7 @@ function sendNative(method, params, id) {
     paramsEncoded.push(param);
   }
 
-  const msg = {method, params: paramsEncoded, id};
+  const msg = {method, params: paramsEncoded, msgID};
 
   console.log('sendNative',msg);
 
@@ -77,7 +77,7 @@ window.addEventListener('message', (event) => {
   // Main thread receives sendNative messages from sandbox -> sends them to native host
   if (event.data.cmd === 'sendNative') {
     //console.log('received main thread sendNative event:',event);
-    sendNative(event.data.method, event.data.params, event.data.id);
+    sendNative(event.data.method, event.data.params, event.data.msgID);
   }
 });
 
