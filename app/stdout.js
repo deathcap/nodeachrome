@@ -22,7 +22,7 @@ class BrowserStdout extends Writable {
     }
 
     const node = document.createTextNode(output);
-    document.body.appendChild(node);
+    document.getElementById('output').appendChild(node);
 
     process.nextTick(cb);
   }
