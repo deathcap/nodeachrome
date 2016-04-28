@@ -21,6 +21,10 @@ function spawn(argv, env) {
 
   let {iframe, container} = createDraggableIframe('userland-process-' + pid);
 
+  // Tile windows TODO: automatic organization, non-overlapping mode
+  container.style.top = (20 * pid) + 'px';
+  container.style.left = (20 * pid) + 'px';
+
   iframes.set(pid, iframe);
 
   iframe.setAttribute('src', '/userland/userland.html');
