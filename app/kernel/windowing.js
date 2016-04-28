@@ -4,10 +4,11 @@
 //
 // Manages draggable iframes (drag from their edges, like real windows, but on the same page)
 
-function createDraggableIframe(id) {
+function createDraggableIframe(pid) {
   const container = document.createElement('div');
   const iframe = document.createElement('iframe');
 
+  const id = 'userland-process-' + pid;
   iframe.setAttribute('id', id);
 
   container.setAttribute('id', 'container-' + id);
@@ -15,11 +16,13 @@ function createDraggableIframe(id) {
 background: silver;
 border-width: 5px;
 position: absolute;
-top: 10px;
-left: 10px;
 border-radius: 4px; padding: 8px;
 cursor: move;
+/* Tile windows TODO: automatic organization, non-overlapping mode */
+top: ${20 * pid}px;
+left: ${20 * pid}px;
 `);
+
   container.setAttribute('draggable', 'true');
 
   container.addEventListener('dragstart', (event) => {

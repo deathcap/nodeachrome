@@ -19,11 +19,7 @@ function spawn(argv, env) {
 
   if (!env) env = global.ENV; // inherit from kernel TODO: per-process inheritance, forking
 
-  let {iframe, container} = createDraggableIframe('userland-process-' + pid);
-
-  // Tile windows TODO: automatic organization, non-overlapping mode
-  container.style.top = (20 * pid) + 'px';
-  container.style.left = (20 * pid) + 'px';
+  let {iframe, container} = createDraggableIframe(pid);
 
   iframes.set(pid, iframe);
 
