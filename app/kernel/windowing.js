@@ -4,6 +4,8 @@
 //
 // Manages draggable iframes (drag from their edges, like real windows, but on the same page)
 
+let maxZindex = 0;
+
 function createDraggableIframe(pid) {
   const container = document.createElement('div');
   const iframe = document.createElement('iframe');
@@ -24,6 +26,11 @@ left: ${20 * pid}px;
 `);
 
   container.setAttribute('draggable', 'true');
+
+  container.addEventListener('click', (event) => {
+    maxZindex += 1;
+    container.style.zIndex = maxZindex; // bring to top
+  });
 
   container.addEventListener('dragstart', (event) => {
     const style = window.getComputedStyle(event.target, null);
