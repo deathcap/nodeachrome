@@ -46,9 +46,11 @@ border-radius: 4px; padding: 8px;
     const style = window.getComputedStyle(event.target, null);
     event.dataTransfer.setData('text/plain', container.getAttribute('id') + ',' +
       (parseInt(style.getPropertyValue("left"),10) - event.clientX) + ',' + (parseInt(style.getPropertyValue("top"),10) - event.clientY));
+    iframe.style.visibility = 'hidden'; // temporarily hide to allow mouse events through
   });
   container.addEventListener('dragend', (event) => {
     console.log('dragend',event);
+    iframe.style.visibility = '';
   });
 
   container.appendChild(iframe);
