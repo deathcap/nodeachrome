@@ -13,8 +13,9 @@ let draggingElement = null;
 // like Unix spawn/exec (close enough) or posix_spawn/system
 // TODO: Unix-ish standard Node API to implement instead? process, os? exec? Found it: https://nodejs.org/api/child_process.html exec!
 function spawn(argv, env) {
-  const container = document.getElementById('userland-processes');
+  const containers = document.getElementById('userland-processes');
 
+  const container = document.createElement('div');
   const iframe = document.createElement('iframe');
   const pid = nextPid;
   nextPid += 1;
@@ -25,24 +26,33 @@ function spawn(argv, env) {
 
   iframe.setAttribute('id', 'userland-process-' + pid);
   iframe.setAttribute('src', '/userland/userland.html');
-
-  iframe.setAttribute('style', 'border-width: 5px; position: absolute; top: 10px; left: 10px; border-radius: 4px; padding: 8px;');
-  iframe.setAttribute('draggable', 'true'); // allow picking it up TODO: allow dropping
-
-  iframe.addEventListener('dragstart', (event) => {
-    const style = window.getComputedStyle(event.target, null);
-    event.dataTransfer.setData('text/plain', iframe.getAttribute('id') + ',' +
-      (parseInt(style.getPropertyValue("left"),10) - event.clientX) + ',' + (parseInt(style.getPropertyValue("top"),10) - event.clientY));
-  });
-  iframe.addEventListener('dragend', (event) => {
-    console.log('dragend',event);
-  });
   iframe.addEventListener('load', (event) => {
     console.log('sandbox frame load',pid);
     iframe.contentWindow.postMessage({cmd: '_start', pid: pid, argv, env}, '*');
   });
 
+  container.setAttribute('id', 'container-' + pid);
+  container.setAttribute('style', `
+background: silver;
+border-width: 5px;
+position: absolute;
+top: 10px;
+left: 10px;
+border-radius: 4px; padding: 8px;
+`);
+  container.setAttribute('draggable', 'true'); // allow picking it up TODO: allow dropping
+
+  container.addEventListener('dragstart', (event) => {
+    const style = window.getComputedStyle(event.target, null);
+    event.dataTransfer.setData('text/plain', container.getAttribute('id') + ',' +
+      (parseInt(style.getPropertyValue("left"),10) - event.clientX) + ',' + (parseInt(style.getPropertyValue("top"),10) - event.clientY));
+  });
+  container.addEventListener('dragend', (event) => {
+    console.log('dragend',event);
+  });
+
   container.appendChild(iframe);
+  containers.appendChild(container);
 
   return iframe;
 }
