@@ -39,11 +39,13 @@ position: absolute;
 top: 10px;
 left: 10px;
 border-radius: 4px; padding: 8px;
+cursor: move;
 `);
   container.setAttribute('draggable', 'true'); // allow picking it up TODO: allow dropping
 
   container.addEventListener('dragstart', (event) => {
     const style = window.getComputedStyle(event.target, null);
+    event.dataTransfer.dragEffect = 'move';
     event.dataTransfer.setData('text/plain', container.getAttribute('id') + ',' +
       (parseInt(style.getPropertyValue("left"),10) - event.clientX) + ',' + (parseInt(style.getPropertyValue("top"),10) - event.clientY));
     iframe.style.visibility = 'hidden'; // temporarily hide to allow mouse events through
