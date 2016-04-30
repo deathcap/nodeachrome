@@ -24,7 +24,7 @@ window.addEventListener('message', (event) => {
     console.log('sandbox received _start:',event.data);
     process.stdout.write(`\nStarted pid=${process.pid}, argv=${JSON.stringify(process.argv)}, env=${JSON.stringify(process.env)}\n`);
 
-    event.source.postMessage({cmd: 'started', token: event.data.token}, event.origin);
+    event.source.postMessage({cmd: 'started'}, event.origin);
   }
 });
 

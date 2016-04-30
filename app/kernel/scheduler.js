@@ -1,12 +1,11 @@
 'use strict';
 
 // Kernel "scheduler" (analogous to OS), manages processes
-// Maintains multiple independent execution contexts (processes) for JavaScript, using sandboxed iframes (unique origins)
+// Maintains multiple independent execution contexts (processes) for JavaScript, using sandboxed iframes
 
 let nextPid = 1;
 let processes = new Map();
-let tokens = new Map();
-let origins = new Map();
+let sources = new Map();
 
 const {createDraggableIframe} = require('./windowing');
 
@@ -46,11 +45,9 @@ class Process {
     this.iframe.addEventListener('load', (event) => {
       console.log('sandbox frame load',this.pid);
 
-      // Process possess a random 'token' only it and the kernel know, to prove it it is who it says it is
-      this.token = 'token-'+crypto.getRandomValues(new Uint32Array(8)).join(',');
-      tokens.set(this.token, this);
+      sources.set(this.iframe.contentWindow, this);
 
-      this.iframe.contentWindow.postMessage({cmd: '_start', pid: this.pid, argv: this.argv, env: this.env, token: this.token}, '*');
+      this.iframe.contentWindow.postMessage({cmd: '_start', pid: this.pid, argv: this.argv, env: this.env}, '*');
       this.state = 'ready'; // ready until process confirms it started by posting reply back to _start: 'started'
     });
     // TODO: add path, to require and/or readFile to execute and run
@@ -75,19 +72,15 @@ class Process {
     return processes.get(pid);
   }
 
-  static getFromToken(token) {
-    return tokens.get(token);
+  static getFromSource(source) {
+    return sources.get(source);
   }
 }
 
 window.addEventListener('message', (event) => {
   if (event.data.cmd === 'started') {
-    const proc = Process.getFromToken(event.data.token);
-    if (!proc) throw new Error(`started process not found: ${event.data.token}`);
-
-    // Save the origin for further lookup
-    proc.origin = event.origin; // trusted by token
-    origins.set(proc.origin, proc);
+    const proc = Process.getFromSource(event.source);
+    if (!proc) throw new Error(`started process not found: ${event.data}`);
 
     proc.state = 'running';
   }
