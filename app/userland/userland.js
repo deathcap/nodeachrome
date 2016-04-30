@@ -16,6 +16,7 @@ Object.assign(global, {
   Buffer: require('buffer'),
   console: require('console'),
   constants: require('constants'),
+  child_process: require('child_process'),
   crypto: require('crypto'),
   domain: require('domain'),
   events: require('events'),

@@ -125,6 +125,15 @@ window.addEventListener('message', (event) => {
     window.setTimeout(() => {
       sourceProcess.terminate(code);
     }, terminateDelaySeconds * 1000);
+  } else if (event.data.cmd === 'spawn') {
+    const command = event.data.command;
+    const args = event.data.args;
+
+    const argv = [command].concat(event.data.args);
+    const env = event.data.env;
+
+    const newProcess = new Process();
+    newProcess.exec(argv, env);
   }
 });
 
