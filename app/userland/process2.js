@@ -21,7 +21,6 @@ process.cwd = () => {
   return process.env.PWD;
 };
 process.execPath = '/bin/node';
-require('./stdout');
 
 // http://stackoverflow.com/questions/24042861/node-js-what-does-process-binding-mean
 // "This function returns internal module, like require"
@@ -40,3 +39,6 @@ Object.defineProperty(process, 'title', {
   get: () => 'browser', // some code relies on it
   set: (title) => document.getElementById('title').innerText = document.title = title,
 });
+
+require('./stdout');
+require('./signal');

@@ -7,6 +7,7 @@ let kernelSource = null;
 let kernelOrigin = null;
 
 // our sandbox identifier, who we are. global _per sandbox_ - basically like a Unix pid
+// TODO: replace with getter/setter defineProperty, since not actually supposed to set it, per the API
 process.pid = null;
 
 window.addEventListener('message', (event) => {

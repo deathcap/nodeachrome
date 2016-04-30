@@ -83,6 +83,22 @@ window.addEventListener('message', (event) => {
     if (!proc) throw new Error(`started process not found: ${event.data}`);
 
     proc.state = 'running';
+  } else if (event.data.cmd === 'kill') {
+    const pid = event.data.pid;
+    const signal = event.data.signal;
+
+    const sourceProcess = Process.getFromSource(event.source);
+
+    const targetProcess = Process.getFromPid(pid);
+    if (!targetProcess) {
+      // TODO: deliver ESRCH error back to source.. but have to do it async, even though
+      // the API is sync! What to do here? Deliver it another signal? Or does it matter?
+      //sourceProcess.postMessage({cmd: 'signal',
+      console.log(`kill(${pid}, ${signal}) from ${sourceProcess.pid}, but ${pid} does not exist`);
+      return;
+    }
+
+    targetProcess.postMessage({cmd: 'signal', fromPid: sourceProcess.pid, signal: signal});
   }
 });
 
