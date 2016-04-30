@@ -24,6 +24,7 @@ window.addEventListener('message', (event) => {
           statusText: dataObject.statusText,
           type: dataObject.type,
           url: dataObject.url,
+          headers: JSON.parse(JSON.stringify(dataObject.headers)), // https://fetch.spec.whatwg.org/#headers-class
         };
         postUserland(pid, {cmd: 'fetch', method: 'resolve', id, data});
 

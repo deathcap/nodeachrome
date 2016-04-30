@@ -31,6 +31,8 @@ window.addEventListener('message', (event) => {
       const resolve = id2resolve.get(id);
       const dataObject = event.data.data;
 
+      dataObject.headers = new Headers(dataObject.headers);
+
       dataObject.body = {
         getReader: () => { // TODO: new ReadableStream({type: "bytes"}), but get an illegal constructor err? https://streams.spec.whatwg.org/#rs-constructorj
           return {
