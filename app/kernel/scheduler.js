@@ -69,6 +69,15 @@ class Process {
     // TODO: zombies? when exit, may want to keep process around for examination, until the zombie is 'reaped'
   }
 
+  markDead(code) { // TODO: move to window
+    this.state = 'dead';
+    this.exitCode = code;
+
+    const notice = document.createElement('p');
+    notice.innerText = `DEAD PROCESS: ${code}`;
+    this.container.insertBefore(notice, this.iframe);
+  }
+
   static getFromPid(pid) {
     return processes.get(pid);
   }
@@ -103,7 +112,19 @@ window.addEventListener('message', (event) => {
   } else if (event.data.cmd === 'exit') {
     const sourceProcess = Process.getFromSource(event.source);
 
-    sourceProcess.terminate(event.data.code);
+    const code = event.data.code;
+
+    // Give some time to inspect the process before it cleans up
+    // TODO: zombie reaping model instead, mark dead but allow getting exit code, visual, but no IPC, etc.
+    // and have /bin/init, the parent of all processes, 'reap' the zombies after they are done or whatever
+    const terminateDelaySeconds = 5;
+    console.log(`Process ${sourceProcess.pid} exited (${code}), terminating in ${terminateDelaySeconds}s`);
+
+    sourceProcess.markDead(code);
+
+    window.setTimeout(() => {
+      sourceProcess.terminate(code);
+    }, terminateDelaySeconds * 1000);
   }
 });
 
