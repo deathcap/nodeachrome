@@ -109,8 +109,12 @@ implemented using [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/
 and/or [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
 
 Unlike websites, Chrome extensions are not necessarily bound by the Same-Origin Policy on network
-requests. Nodeachrome's `manifest.json` specifies permissions `http://*/`, `https://*/`, so it should
-be able to access third-party websites like the NPM registry server. TODO: however, this is currently broken due to https://github.com/deathcap/nodeachrome/issues/7
+requests. Nodeachrome's `manifest.json` specifies permissions `http://*/`, `https://*/`, so it can
+access third-party websites like the NPM registry server. Sandboxes do not have this privilege, so
+the window.fetch API is proxied to the kernel fetch API to retain this privilege. This allows the NPM
+registry client to function, example:
+
+    npm_cli(['/bin/node', 'npm', 'view', 'ucfirst'])
 
 ### other
 
