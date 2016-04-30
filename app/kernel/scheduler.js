@@ -5,6 +5,8 @@
 
 let nextPid = 1;
 let processes = new Map();
+let tokens = new Map();
+let origins = new Map();
 
 const {createDraggableIframe} = require('./windowing');
 
@@ -43,8 +45,13 @@ class Process {
     this.iframe.setAttribute('src', '/userland/userland.html');
     this.iframe.addEventListener('load', (event) => {
       console.log('sandbox frame load',this.pid);
-      this.iframe.contentWindow.postMessage({cmd: '_start', pid: this.pid, argv: this.argv, env: this.env}, '*');
-      this.state = 'running'; // TODO: or should differentiate between frame loaded, and confirmed the frame is running the script? get feedback from _start
+
+      // Process possess a random 'token' only it and the kernel know, to prove it it is who it says it is
+      this.token = 'token-'+crypto.getRandomValues(new Uint32Array(8)).join(',');
+      tokens.set(this.token, this);
+
+      this.iframe.contentWindow.postMessage({cmd: '_start', pid: this.pid, argv: this.argv, env: this.env, token: this.token}, '*');
+      this.state = 'ready'; // ready until process confirms it started by posting reply back to _start: 'started'
     });
     // TODO: add path, to require and/or readFile to execute and run
   }
@@ -64,10 +71,27 @@ class Process {
     // TODO: reap zombies
   }
 
-  static getProcess(pid) {
+  static getFromPid(pid) {
     return processes.get(pid);
   }
+
+  static getFromToken(token) {
+    return tokens.get(token);
+  }
 }
+
+window.addEventListener('message', (event) => {
+  if (event.data.cmd === 'started') {
+    const proc = Process.getFromToken(event.data.token);
+    if (!proc) throw new Error(`started process not found: ${event.data.token}`);
+
+    // Save the origin for further lookup
+    proc.origin = event.origin; // trusted by token
+    origins.set(proc.origin, proc);
+
+    proc.state = 'running';
+  }
+});
 
 // Send a message to the sandboxed iframe, aka the userland
 function postUserland(pid, msg) {
