@@ -4,6 +4,7 @@
 
 require('shellasync/global'); // export some useful shell-like functions: cat(), ls(), ... using node.js fs async APIs
 require('./process2');
+require('./fetch');
 
 // Expose globally for debugging
 Object.assign(global, {

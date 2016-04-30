@@ -3,6 +3,7 @@
 // Main "kernel", manages sandboxes (~processes)
 
 require('./native.js');
+require('./kfetch.js');
 
 const spawn = require('./scheduler').spawn;
 const evalin = require('./scheduler').evalin;
