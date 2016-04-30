@@ -7,6 +7,7 @@ const syscall = require('./syscall').syscall;
 
 // https://nodejs.org/api/process.html
 process.exit = (code=0) => {
+  process.exitCode = code;
   process.stderr.write(`\n\nProcess exited with code ${code}\n`);
 };
 Object.assign(process.versions, {
