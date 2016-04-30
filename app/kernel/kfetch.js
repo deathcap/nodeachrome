@@ -32,6 +32,9 @@ window.addEventListener('message', (event) => {
         function read() {
           reader.read().then((result) => {
             postUserland(pid, {cmd: 'fetch', method: 'resolveRead', id, result});
+            if (!result.done) {
+              read();
+            }
           }).catch((err) => {
             postUserland(pid, {cmd: 'fetch', method: 'rejectRead', id, err});
           });
