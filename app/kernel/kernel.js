@@ -5,7 +5,7 @@
 require('./native.js');
 require('./kfetch.js');
 
-const spawn = require('./scheduler').spawn;
+const Process = require('./scheduler').Process;
 const evalin = require('./scheduler').evalin;
 const kill = require('./scheduler').kill;
 
@@ -22,11 +22,13 @@ const ENV = {
 
 // Expose globally for debugging
 Object.assign(global, {
-  spawn: spawn,
+  Process: Process,
+
   evalin: evalin,
   kill: kill,
   ENV: ENV,
 });
 
-console.log('creating initial sandbox');
-spawn(['init']); // when page loads, create first sandbox
+console.log('creating initial process');
+const init = new Process();
+init.exec(['init']);

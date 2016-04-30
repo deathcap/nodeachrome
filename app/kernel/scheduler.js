@@ -4,44 +4,54 @@
 // Maintains multiple independent execution contexts (processes) for JavaScript, using sandboxed iframes (unique origins)
 
 let nextPid = 1;
-let iframes = new Map();
+let processes = new Map();
 
 const {createDraggableIframe} = require('./windowing');
 
 class Process {
+  // Create a new "userland" sandboxed execution context (= process)
   constructor() {
     this.state = 'new'; // see https://en.wikipedia.org/wiki/Process_state
     this.pid = nextPid;
     nextPid += 1;
 
-    let {iframe, container} = createDraggableIframe(pid);
+    let {iframe, container} = createDraggableIframe(this.pid);
 
     this.iframe = iframe;
     this.container = container;
 
-    iframes.set(pid, iframe);
+    processes.set(this.pid, this);
 
     const containers = document.getElementById('userland-processes');
     containers.appendChild(container);
 
-    console.log(`new Process: pid=${this.pid}`);
+    console.log(`new Process pid=${this.pid}`);
     // process is created in frozen state, can be started with exec()
   }
 
+  // Execute code with arguments and environment, like Unix fork/exec or posix_spawn/system
   exec(argv, env) {
+    console.log(`Process exec ${this.pid}, argv ${JSON.stringify(argv)}, env ${JSON.stringify(env)}`);
+
     if (!env) env = global.ENV; // inherit from kernel TODO: per-process inheritance, forking
 
+    // save own independent copy
+    this.argv = JSON.parse(JSON.stringify(argv));
+    this.env = JSON.parse(JSON.stringify(env));
+
     this.state = 'waiting'; // awaiting execution
-    iframe.setAttribute('src', '/userland/userland.html');
-    iframe.addEventListener('load', (event) => {
-      console.log('sandbox frame load',pid);
-      iframe.contentWindow.postMessage({cmd: '_start', pid: pid, argv, env}, '*');
+    this.iframe.setAttribute('src', '/userland/userland.html');
+    this.iframe.addEventListener('load', (event) => {
+      console.log('sandbox frame load',this.pid);
+      this.iframe.contentWindow.postMessage({cmd: '_start', pid: this.pid, argv: this.argv, env: this.env}, '*');
       this.state = 'running'; // TODO: or should differentiate between frame loaded, and confirmed the frame is running the script? get feedback from _start
     });
+    // TODO: add path, to require and/or readFile to execute and run
   }
 
+  // IPC
   postMessage(msg) {
-    if (!this.iframe.contentWindow) throw new Error(`no such process, terminated: ${this.pid}`);
+    if (!this.iframe.contentWindow) throw new Error(`unable to send to process, no iframe content: ${this.pid}`);
 
     this.iframe.contentWindow.postMessage(msg, '*');
   }
@@ -53,42 +63,18 @@ class Process {
     this.state = 'terminated';
     // TODO: reap zombies
   }
-}
 
-// Create a new "userland" sandboxed execution context, previously 'newsb',
-// like Unix spawn/exec (close enough) or posix_spawn/system
-// TODO: Unix-ish standard Node API to implement instead? process, os? exec? Found it: https://nodejs.org/api/child_process.html exec!
-function spawn(argv, env) {
-  const containers = document.getElementById('userland-processes');
-
-  const pid = nextPid;
-  nextPid += 1;
-
-  if (!env) env = global.ENV; // inherit from kernel TODO: per-process inheritance, forking
-
-  let {iframe, container} = createDraggableIframe(pid);
-
-  iframes.set(pid, iframe);
-
-  iframe.setAttribute('src', '/userland/userland.html');
-  iframe.addEventListener('load', (event) => {
-    console.log('sandbox frame load',pid);
-    iframe.contentWindow.postMessage({cmd: '_start', pid: pid, argv, env}, '*');
-  });
-
-  container.appendChild(iframe);
-  containers.appendChild(container);
-
-  return iframe;
+  static getProcess(pid) {
+    return processes.get(pid);
+  }
 }
 
 // Send a message to the sandboxed iframe, aka the userland
 function postUserland(pid, msg) {
-  const iframe = iframes.get(pid);
-  if (!iframe) throw new Error(`no such process: ${pid}`);
-  if (!iframe.contentWindow) throw new Error(`no such process, terminated: ${pid}`);
+  const process = processes.get(pid);
+  if (!process) throw new Error(`no such process: ${pid}`);
 
-  iframe.contentWindow.postMessage(msg, '*');
+  process.postMessage(msg);
 }
 
 // Evaluate code within a given sandbox
@@ -109,7 +95,7 @@ function kill(pid, signal) {
 }
 
 module.exports = {
-  spawn,
+  Process,
   evalin,
   postUserland,
   kill,
