@@ -13,9 +13,29 @@ window.addEventListener('message', (event) => {
     const pid = event.data.pid;
 
     if (event.data.method === 'fetch') {
-      function resolve(data) {
-        data = data.toString(); // TODO: fix cloning. in particular, response body [object Response]
+      function resolve(dataObject) {
+        // 'Response' object
+        // Copy the serializable properties
+        let data = {
+          //body: dataObject.body, // can't, is a ReadableByteStream
+          bodyUsed: dataObject.bodyUsed,
+          ok: dataObject.ok,
+          status: dataObject.status,
+          statusText: dataObject.statusText,
+          type: dataObject.type,
+          url: dataObject.url,
+        };
         postUserland(pid, {cmd: 'fetch', method: 'resolve', id, data});
+
+        const reader = dataObject.body.getReader();
+        function read() {
+          reader.read().then((result) => {
+            postUserland(pid, {cmd: 'fetch', method: 'resolveRead', id, result});
+          }).catch((err) => {
+            postUserland(pid, {cmd: 'fetch', method: 'rejectRead', id, err});
+          });
+        }
+        read();
       }
       function reject(err) {
         err = err.toString(); // TODO: fix cloning
