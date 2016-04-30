@@ -9,7 +9,11 @@ const syscall = require('./syscall').syscall;
 process.exit = (code=0) => {
   process.exitCode = code;
   process.stderr.write(`\n\nProcess exited with code ${code}\n`);
+
+  syscall({cmd: 'exit', code: code});
 };
+
+
 Object.assign(process.versions, {
   node: '6.0.0', // simulated node.js compatibility level version (optimistic)
   app: navigator.appVersion,

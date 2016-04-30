@@ -60,12 +60,13 @@ class Process {
     this.iframe.contentWindow.postMessage(msg, '*');
   }
 
-  terminate() {
+  terminate(code) {
     this.container.parentNode.removeChild(this.container);
     processes.delete(this.pid);
     console.log(`Terminated ${this.pid}`);
     this.state = 'terminated';
-    // TODO: reap zombies
+    this.exitCode = code;
+    // TODO: zombies? when exit, may want to keep process around for examination, until the zombie is 'reaped'
   }
 
   static getFromPid(pid) {
@@ -79,10 +80,10 @@ class Process {
 
 window.addEventListener('message', (event) => {
   if (event.data.cmd === 'started') {
-    const proc = Process.getFromSource(event.source);
-    if (!proc) throw new Error(`started process not found: ${event.data}`);
+    const sourceProcess = Process.getFromSource(event.source);
+    if (!sourceProcess) throw new Error(`started process not found: ${event.data}`);
 
-    proc.state = 'running';
+    sourceProcess.state = 'running';
   } else if (event.data.cmd === 'kill') {
     const pid = event.data.pid;
     const signal = event.data.signal;
@@ -99,6 +100,10 @@ window.addEventListener('message', (event) => {
     }
 
     targetProcess.postMessage({cmd: 'signal', fromPid: sourceProcess.pid, signal: signal});
+  } else if (event.data.cmd === 'exit') {
+    const sourceProcess = Process.getFromSource(event.source);
+
+    sourceProcess.terminate(event.data.code);
   }
 });
 
