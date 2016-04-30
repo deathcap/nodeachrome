@@ -10,7 +10,10 @@ window.addEventListener('message', (event) => {
     console.log('got fetch',event.data);
 
     const id = event.data.id;
-    const pid = event.data.pid;
+
+    function reply(msg) {
+      event.source.postMessage(msg, '*');
+    }
 
     if (event.data.method === 'fetch') {
       function resolve(dataObject) {
@@ -26,24 +29,24 @@ window.addEventListener('message', (event) => {
           url: dataObject.url,
           headers: JSON.parse(JSON.stringify(dataObject.headers)), // https://fetch.spec.whatwg.org/#headers-class
         };
-        postUserland(pid, {cmd: 'fetch', method: 'resolve', id, data});
+        reply( {cmd: 'fetch', method: 'resolve', id, data});
 
         const reader = dataObject.body.getReader();
         function read() {
           reader.read().then((result) => {
-            postUserland(pid, {cmd: 'fetch', method: 'resolveRead', id, result});
+            reply({cmd: 'fetch', method: 'resolveRead', id, result});
             if (!result.done) {
               read();
             }
           }).catch((err) => {
-            postUserland(pid, {cmd: 'fetch', method: 'rejectRead', id, err});
+            reply({cmd: 'fetch', method: 'rejectRead', id, err});
           });
         }
         read();
       }
       function reject(err) {
         err = err.toString(); // TODO: fix cloning
-        postUserland(pid, {cmd: 'fetch', method: 'reject', id, err});
+        reply({cmd: 'fetch', method: 'reject', id, err});
       }
 
       const request = fetch(event.data.input, event.data.init).then(resolve).catch(reject);
