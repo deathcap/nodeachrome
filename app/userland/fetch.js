@@ -15,7 +15,7 @@ let id2rejectRead = new Map();
 global.fetch = function(input, init) {
   return new Promise((resolve, reject) => {
     const id = nextID;
-    syscall({cmd: 'fetch', method: 'fetch', id, pid: process.pid, input, init});
+    syscall({cmd: 'fetch', method: 'fetch', id, input, init});
     nextID += 1;
 
     id2resolve.set(id, resolve);
