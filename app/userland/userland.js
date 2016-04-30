@@ -37,6 +37,7 @@ Object.assign(global, {
 
   // Useful apps
   browserify: require('browserify'),
+  browserify_cli: require('./browserify-cli'),
   npm: require('npm'),
   npm_cli: require('./npm-cli'),
 });

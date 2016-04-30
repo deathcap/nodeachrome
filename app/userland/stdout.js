@@ -31,4 +31,8 @@ class BrowserStdout extends Writable {
 process.stdout = new BrowserStdout({label: 'stdout'});
 process.stderr = new BrowserStdout({label: 'stderr'});
 
-// TODO: stdin
+// TODO: real stream stdin
+// this is enough for browserify_cli to not choke
+process.stdin = {
+  isTTY: false,
+};
