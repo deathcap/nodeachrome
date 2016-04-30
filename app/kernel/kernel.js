@@ -7,7 +7,6 @@ require('./kfetch.js');
 
 const Process = require('./scheduler').Process;
 const evalin = require('./scheduler').evalin;
-const kill = require('./scheduler').kill;
 
 // Globally default environment variables, set here since processes inherit them
 const ENV = {
@@ -25,7 +24,6 @@ Object.assign(global, {
   Process: Process,
 
   evalin: evalin,
-  kill: kill,
   ENV: ENV,
 });
 

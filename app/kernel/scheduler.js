@@ -57,9 +57,9 @@ class Process {
   }
 
   terminate() {
-    this.iframe.parentNode.removeChild(iframe); // TODO: remove container???
-    this.iframes.delete(pid);
-    console.log(`Terminated ${pid}`);
+    this.container.parentNode.removeChild(this.container);
+    processes.delete(this.pid);
+    console.log(`Terminated ${this.pid}`);
     this.state = 'terminated';
     // TODO: reap zombies
   }
@@ -82,21 +82,8 @@ function evalin(pid, code) {
   postUserland(pid, {cmd: 'eval', code: code});
 }
 
-function kill(pid, signal) {
-  //TODO: SIGTERM etc. postUserland(pid, {cmd: 'signal', signal: signal});
-  //if (signal === 'SIGKILL') {
-  
-    const iframe = iframes.get(pid);
-    iframe.parentNode.removeChild(iframe);
-    iframes.delete(pid);
-    console.log(`Killed ${pid}`);
-
-  //}
-}
-
 module.exports = {
   Process,
   evalin,
   postUserland,
-  kill,
 };
