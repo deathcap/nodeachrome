@@ -15,6 +15,7 @@
     "acorn": "^3.1.0",
     "asarray": "^0.1.0",
     "browserify": "^13.0.0",
+    "cash": "^0.8.0",
     "npm": "deathcap/npm#static-require",
     "npm-registry-client": "deathcap/npm-registry-client#browserify",
     "shellasync": "^2.1.0"

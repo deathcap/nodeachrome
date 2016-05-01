@@ -32,7 +32,11 @@ process.stdout = new BrowserStdout({label: 'stdout'});
 process.stderr = new BrowserStdout({label: 'stderr'});
 
 // TODO: real stream stdin
-// this is enough for browserify_cli to not choke
+// this is enough for some apps to not choke
 process.stdin = {
-  isTTY: false,
+  isTTY: false, // for browserify cli
+  on: () => null, // for cash/vorpal
 };
+
+// hack to not choke on console.log.apply(console.log, args), used in vorpal/lib/ui.js
+console.log.apply = (f, args) => console.log(args);

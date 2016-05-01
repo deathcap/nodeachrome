@@ -39,6 +39,7 @@ Object.assign(global, {
   // Useful apps
   browserify: require('browserify'),
   npm: require('npm'),
+  cash: require('cash'),
 });
 
 window.addEventListener('message', (event) => {

@@ -27,14 +27,17 @@ window.addEventListener('message', (event) => {
 
     event.source.postMessage({cmd: 'started'}, event.origin);
 
-    if (process.argv[1] === 'init') {
-      require('./bin/init');
-    } else if (process.argv[1] === 'npm') {
-      require('./bin/npm');
-    } else if (process.argv[1] === 'browserify') {
-      require('./bin/browserify');
-    } else {
-      // TODO: dynamic requires
+    // TODO: dynamic requires
+    // This is what we can do now with browserify
+    let commands = {
+      init: () => require('./bin/init'),
+      npm: () => require('./bin/npm'),
+      browserify: () => require('./bin/browserify'),
+      ls: () => require('../node_modules/cash/bin/ls'),
+    };
+
+    if (commands[process.argv[1]]) {
+      commands[process.argv[1]]();
     }
   }
 });
