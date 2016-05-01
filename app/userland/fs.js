@@ -38,6 +38,11 @@ fs.mkdir = (path, mode, cb) => {
   } else {
     sendNative('fs.mkdir', [path, mode], cb);
   }
+};
+
+fs.mkdirSync = (path, mode) => {
+  // best we can do
+  fs.mkdir(path, mode, () => console.log(`mkdirSync(${path}) completed`));
 }
 
 fs.open = (path, flags, mode, cb) => {
