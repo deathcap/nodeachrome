@@ -17,10 +17,12 @@ function createDraggableIframe(pid) {
   container.setAttribute('style', `
 background: silver;
 border-width: 5px;
-position: absolute;
-border-radius: 4px; padding: 8px;
+border-radius: 10px;
+padding: 8px;
+border-style: groove;
 cursor: move;
 /* Tile windows TODO: automatic organization, non-overlapping mode */
+position: absolute;
 top: ${20 * pid}px;
 left: ${20 * pid}px;
 `);
