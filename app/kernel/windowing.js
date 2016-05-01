@@ -44,9 +44,21 @@ left: ${20 * pid}px;
     iframe.style.visibility = '';
   });
 
+  const titlebar = document.createElement('div');
+  titlebar.setAttribute('id', 'titlebar-' + id);
+  titlebar.setAttribute('style', `
+width: 100%;
+height: 20px;
+background: #001caf;
+color: white;
+font-weight: bold;
+`);
+  titlebar.textContent = `New process ${pid}`;
+
+  container.appendChild(titlebar);
   container.appendChild(iframe);
 
-  return {iframe, container};
+  return {iframe, container, titlebar};
 }
 
 document.body.addEventListener('dragover', (event) => {

@@ -18,10 +18,11 @@ class Process {
 
     Process.broadcast({cmd: 'nextPid', nextPid});
 
-    let {iframe, container} = createDraggableIframe(this.pid);
+    let {iframe, container, titlebar} = createDraggableIframe(this.pid);
 
     this.iframe = iframe;
     this.container = container;
+    this.titlebar = titlebar;
 
     processes.set(this.pid, this);
 
@@ -77,12 +78,20 @@ class Process {
     // TODO: zombies? when exit, may want to keep process around for examination, until the zombie is 'reaped'
   }
 
+  set title(title) {
+    this.titlebar.textContent = title;
+  }
+
+  get title() {
+    return this.titlebar.textContent;
+  }
+
   markDead(code) { // TODO: move to window
     this.state = 'dead';
     this.exitCode = code;
 
     const notice = document.createElement('p');
-    notice.innerText = `DEAD PROCESS: ${code}`;
+    notice.textContent = `DEAD PROCESS: ${code}`;
     this.container.insertBefore(notice, this.iframe);
   }
 

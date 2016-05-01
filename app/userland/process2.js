@@ -42,7 +42,8 @@ process.binding = (module) => {
 Object.defineProperty(process, 'title', {
   //get: () => document.title,
   get: () => 'browser', // some code relies on it
-  set: (title) => document.getElementById('title').innerText = document.title = title,
+  // TODO: syscall back to kernel to set titlebar, no one sees document title
+  set: (title) => document.getElementById('title').textContent = document.title = title,
 });
 
 require('./stdout');
