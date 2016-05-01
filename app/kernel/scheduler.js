@@ -18,11 +18,16 @@ class Process {
 
     Process.broadcast({cmd: 'nextPid', nextPid});
 
-    let {iframe, container, titlebar} = createDraggableIframe(this.pid);
+    let {iframe, container, titlebar, closeButton} = createDraggableIframe(this.pid);
 
     this.iframe = iframe;
     this.container = container;
     this.titlebar = titlebar;
+    this.closeButton = closeButton;
+
+    this.closeButton.addEventListener('click', (event) => {
+      this.terminate(-1); // TODO: instead, send SIGTERM, let gracefully exit?
+    });
 
     processes.set(this.pid, this);
 

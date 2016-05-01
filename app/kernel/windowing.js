@@ -63,17 +63,29 @@ left: ${20 * pid}px;
   titlebar.setAttribute('id', 'titlebar-' + id);
   titlebar.setAttribute('style', `
 width: 100%;
-height: 20px;
 background: #001caf;
 color: white;
 font-weight: bold;
 `);
   titlebar.textContent = `New process ${pid}`;
 
+  // TODO: minimize and maximize button like http://www.systemuzmani.com/wp-content/uploads/2011/05/win95.gifi
+  // TODO: align buttons to right, try https://github.com/philipwalton/solved-by-flexbox
+  const closeButton = document.createElement('button');
+closeButton.setAttribute('id', 'closebutton-' + id);
+closeButton.setAttribute('style', `
+background-color: #c1c1c1;
+border-style: inset;
+border-color: black;
+`);
+  closeButton.textContent = '\u2715'; // U+2715 MULTIPLICATION X
+
+  titlebar.appendChild(closeButton);
+
   container.appendChild(titlebar);
   container.appendChild(iframe);
 
-  return {iframe, container, titlebar};
+  return {iframe, container, titlebar, closeButton};
 }
 
 document.body.addEventListener('dragover', (event) => {
