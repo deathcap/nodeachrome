@@ -91,13 +91,11 @@ class Process {
     return this.titleText.textContent;
   }
 
-  markDead(code) { // TODO: move to window
+  markDead(code) {
     this.state = 'dead';
     this.exitCode = code;
 
-    const notice = document.createElement('p');
-    notice.textContent = `DEAD PROCESS: ${code}`;
-    this.container.insertBefore(notice, this.iframe);
+    this.title += ` (exited with code ${code})`;
   }
 
   static getFromPid(pid) {
@@ -144,9 +142,8 @@ window.addEventListener('message', (event) => {
 
     sourceProcess.markDead(code);
 
-    window.setTimeout(() => {
-      sourceProcess.terminate(code);
-    }, terminateDelaySeconds * 1000);
+    // TODO: when should this exit? leaving up for now to see terminated process output
+    //sourceProcess.terminate(code);
   } else if (event.data.cmd === 'spawn') {
     const command = event.data.command;
     const args = event.data.args;
