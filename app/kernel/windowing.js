@@ -5,10 +5,13 @@
 // Manages draggable iframes (drag from their edges, like real windows, but on the same page)
 
 let maxZindex = 0;
+let iframes = new Set();
 
 function createDraggableIframe(pid) {
   const container = document.createElement('div');
   const iframe = document.createElement('iframe');
+
+  iframes.add(iframe);
 
   const id = 'userland-process-' + pid;
   iframe.setAttribute('id', id);
@@ -44,11 +47,16 @@ left: ${20 * pid}px;
     event.dataTransfer.dragEffect = 'move';
     event.dataTransfer.setData('text/plain', container.getAttribute('id') + ',' +
       (parseInt(style.getPropertyValue("left"),10) - event.clientX) + ',' + (parseInt(style.getPropertyValue("top"),10) - event.clientY));
-    iframe.style.visibility = 'hidden'; // temporarily hide to allow mouse events through
+    // Temporarily hide all iframes (including this one) to allow mouse events through
+    for (let otherIframe of iframes) {
+      otherIframe.style.visibility = 'hidden';
+    }
   });
   container.addEventListener('dragend', (event) => {
     console.log('dragend',event);
-    iframe.style.visibility = '';
+    for (let otherIframe of iframes) {
+      otherIframe.style.visibility = '';
+    }
   });
 
   const titlebar = document.createElement('div');
