@@ -18,10 +18,16 @@ class Process {
 
     Process.broadcast({cmd: 'nextPid', nextPid});
 
-    let {iframe, container} = createDraggableIframe(this.pid);
+    let {iframe, container, titleText, closeButton} = createDraggableIframe(this.pid);
 
     this.iframe = iframe;
     this.container = container;
+    this.titleText = titleText;
+    this.closeButton = closeButton;
+
+    this.closeButton.addEventListener('click', (event) => {
+      this.terminate(-1); // TODO: instead, send SIGTERM, let gracefully exit?
+    });
 
     processes.set(this.pid, this);
 
@@ -77,13 +83,19 @@ class Process {
     // TODO: zombies? when exit, may want to keep process around for examination, until the zombie is 'reaped'
   }
 
-  markDead(code) { // TODO: move to window
+  set title(title) {
+    this.titleText.textContent = title;
+  }
+
+  get title() {
+    return this.titleText.textContent;
+  }
+
+  markDead(code) {
     this.state = 'dead';
     this.exitCode = code;
 
-    const notice = document.createElement('p');
-    notice.innerText = `DEAD PROCESS: ${code}`;
-    this.container.insertBefore(notice, this.iframe);
+    this.title += ` (exited with code ${code})`;
   }
 
   static getFromPid(pid) {
@@ -130,9 +142,8 @@ window.addEventListener('message', (event) => {
 
     sourceProcess.markDead(code);
 
-    window.setTimeout(() => {
-      sourceProcess.terminate(code);
-    }, terminateDelaySeconds * 1000);
+    // TODO: when should this exit? leaving up for now to see terminated process output
+    //sourceProcess.terminate(code);
   } else if (event.data.cmd === 'spawn') {
     const command = event.data.command;
     const args = event.data.args;
@@ -146,6 +157,10 @@ window.addEventListener('message', (event) => {
     }
 
     newProcess.exec(argv, env);
+  } else if (event.data.cmd === 'setproctitle') {
+    const sourceProcess = Process.getFromSource(event.source);
+
+    sourceProcess.title = event.data.title;
   }
 });
 
