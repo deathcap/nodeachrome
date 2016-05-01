@@ -43,7 +43,10 @@ Object.defineProperty(process, 'title', {
   //get: () => document.title,
   get: () => 'browser', // some code relies on it
   // TODO: syscall back to kernel to set titlebar, no one sees document title
-  set: (title) => document.getElementById('title').textContent = document.title = title,
+  set: (title) => {
+    document.title = title;
+    syscall({cmd: 'setproctitle', title: title});
+  }
 });
 
 require('./stdout');

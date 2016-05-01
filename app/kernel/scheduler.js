@@ -18,11 +18,11 @@ class Process {
 
     Process.broadcast({cmd: 'nextPid', nextPid});
 
-    let {iframe, container, titlebar, closeButton} = createDraggableIframe(this.pid);
+    let {iframe, container, titleText, closeButton} = createDraggableIframe(this.pid);
 
     this.iframe = iframe;
     this.container = container;
-    this.titlebar = titlebar;
+    this.titleText = titleText;
     this.closeButton = closeButton;
 
     this.closeButton.addEventListener('click', (event) => {
@@ -84,11 +84,11 @@ class Process {
   }
 
   set title(title) {
-    this.titlebar.textContent = title;
+    this.titleText.textContent = title;
   }
 
   get title() {
-    return this.titlebar.textContent;
+    return this.titleText.textContent;
   }
 
   markDead(code) { // TODO: move to window
@@ -160,6 +160,10 @@ window.addEventListener('message', (event) => {
     }
 
     newProcess.exec(argv, env);
+  } else if (event.data.cmd === 'setproctitle') {
+    const sourceProcess = Process.getFromSource(event.source);
+
+    sourceProcess.title = event.data.title;
   }
 });
 

@@ -59,15 +59,14 @@ left: ${20 * pid}px;
     }
   });
 
-  const titlebar = document.createElement('div');
-  titlebar.setAttribute('id', 'titlebar-' + id);
-  titlebar.setAttribute('style', `
+  const titleBar = document.createElement('div');
+  titleBar.setAttribute('id', 'titleBar-' + id);
+  titleBar.setAttribute('style', `
 width: 100%;
 background: #001caf;
 color: white;
 font-weight: bold;
 `);
-  titlebar.textContent = `New process ${pid}`;
 
   // TODO: minimize and maximize button like http://www.systemuzmani.com/wp-content/uploads/2011/05/win95.gifi
   // TODO: align buttons to right, try https://github.com/philipwalton/solved-by-flexbox
@@ -80,12 +79,15 @@ border-color: black;
 `);
   closeButton.textContent = '\u2715'; // U+2715 MULTIPLICATION X
 
-  titlebar.appendChild(closeButton);
+  const titleText = document.createTextNode(`New Process ${pid}`);
 
-  container.appendChild(titlebar);
+  titleBar.appendChild(titleText);
+  titleBar.appendChild(closeButton);
+
+  container.appendChild(titleBar);
   container.appendChild(iframe);
 
-  return {iframe, container, titlebar, closeButton};
+  return {iframe, container, titleText, closeButton};
 }
 
 document.body.addEventListener('dragover', (event) => {
