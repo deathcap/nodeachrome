@@ -33,6 +33,7 @@ window.addEventListener('message', (event) => {
       init: () => require('./bin/init'),
       npm: () => require('./bin/npm'),
       browserify: () => require('./bin/browserify'),
+      ls: () => require('../node_modules/cash/bin/ls'),
     };
 
     if (commands[process.argv[1]]) {

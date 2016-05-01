@@ -38,3 +38,5 @@ process.stdin = {
   on: () => null, // for cash/vorpal
 };
 
+// hack to not choke on console.log.apply(console.log, args), used in vorpal/lib/ui.js
+console.log.apply = (f, args) => console.log(args);
