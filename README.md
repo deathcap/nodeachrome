@@ -114,7 +114,7 @@ access third-party websites like the NPM registry server. Sandboxes do not have 
 the window.fetch API is proxied to the kernel fetch API to retain this privilege. This allows the NPM
 registry client to function, example:
 
-    npm_cli(['/bin/node', 'npm', 'view', 'ucfirst'])
+    new Process().exec(['npm', 'view', 'ucfirst'])
 
 ### other
 
@@ -128,7 +128,6 @@ Bundled tools intended to run under this project: (note: may be broken)
 
 * [browserify](http://browserify.org) API (example: `browserify('foo.js').bundle().pipe(process.stdout)`)
 * [npm](https://www.npmjs.com) API
- * `npm_cli`, simulates npm(1) command-line, example: `npm_cli(['/bin/node', 'npm', 'view', 'voxel-engine'])` (TODO: fix CORS)
 
 ## License
 
