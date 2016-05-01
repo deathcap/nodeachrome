@@ -18,7 +18,7 @@ function createDraggableIframe(pid) {
 
   container.setAttribute('id', 'container-' + id);
   container.setAttribute('style', `
-background: silver;
+background: #c1c1c1;
 border-width: 5px;
 border-radius: 10px;
 padding: 8px;
