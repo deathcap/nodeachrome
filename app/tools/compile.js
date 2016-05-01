@@ -10,6 +10,7 @@ const preludePath = path.join(__dirname, 'prelude2.js');
 
 const builtins = require('browserify/lib/builtins');
 builtins.fs = require.resolve('../userland/fs.js');
+builtins.child_process = require.resolve('../userland/child_process.js');
 
 // force acorn@3 to get fixes for CSP https://github.com/substack/node-detective/issues/52
 // https://github.com/ternjs/acorn/issues/90  https://github.com/substack/node-detective/pull/64

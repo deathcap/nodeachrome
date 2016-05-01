@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // based on node_modules/browserify/bin/cmd.js
-module.exports = ((argv) => { process.argv = argv; // edit: added wrapper for module.exports
+
 var fs = require('fs');
 var JSONStream = require('JSONStream');
 var through = require('through2');
 
-var b = require('../node_modules/browserify/bin/args')(process.argv.slice(2));
+var b = require('../../node_modules/browserify/bin/args')(process.argv.slice(2));
 process.stdout.on('error', process.exit);
 
 if ((b.argv._[0] === 'help' && b.argv._[1]) === 'advanced'
@@ -23,7 +23,7 @@ if (b.argv._[0] === 'help' || b.argv.h || b.argv.help
     ;
 }
 if (b.argv.version) {
-    return console.log(require('../node_modules/browserify/bin/../package.json').version);
+    return console.log(require('../../node_modules/browserify/bin/../package.json').version);
 }
 
 b.on('error', errorExit);
@@ -74,4 +74,3 @@ function errorExit(err) {
     }
     process.exit(1);
 }
-});

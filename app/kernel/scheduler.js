@@ -16,6 +16,8 @@ class Process {
     this.pid = nextPid;
     nextPid += 1;
 
+    Process.broadcast({cmd: 'nextPid', nextPid});
+
     let {iframe, container} = createDraggableIframe(this.pid);
 
     this.iframe = iframe;
@@ -58,6 +60,12 @@ class Process {
     if (!this.iframe.contentWindow) throw new Error(`unable to send to process, no iframe content: ${this.pid}`);
 
     this.iframe.contentWindow.postMessage(msg, '*');
+  }
+
+  static broadcast(msg) {
+    for (let thisProcess of processes.values()) {
+      thisProcess.postMessage(msg);
+    }
   }
 
   terminate(code) {
@@ -125,6 +133,19 @@ window.addEventListener('message', (event) => {
     window.setTimeout(() => {
       sourceProcess.terminate(code);
     }, terminateDelaySeconds * 1000);
+  } else if (event.data.cmd === 'spawn') {
+    const command = event.data.command;
+    const args = event.data.args;
+
+    const argv = [command].concat(event.data.args);
+    const env = event.data.env;
+
+    const newProcess = new Process();
+    if (event.data.nextPid && newProcess.pid !== event.data.nextPid) {
+      throw new Error(`spawn() expected pid ${event.data.nextPid} but got ${newProcess.pid}, race condition detected?`);
+    }
+
+    newProcess.exec(argv, env);
   }
 });
 

@@ -16,6 +16,7 @@ Object.assign(global, {
   Buffer: require('buffer'),
   console: require('console'),
   constants: require('constants'),
+  child_process: require('child_process'),
   crypto: require('crypto'),
   domain: require('domain'),
   events: require('events'),
@@ -37,9 +38,7 @@ Object.assign(global, {
 
   // Useful apps
   browserify: require('browserify'),
-  browserify_cli: require('./browserify-cli'),
   npm: require('npm'),
-  npm_cli: require('./npm-cli'),
 });
 
 window.addEventListener('message', (event) => {
