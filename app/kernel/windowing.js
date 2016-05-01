@@ -29,12 +29,17 @@ left: ${20 * pid}px;
 
   container.setAttribute('draggable', 'true');
 
-  container.addEventListener('click', (event) => {
+  function bringToTop() {
     maxZindex += 1;
-    container.style.zIndex = maxZindex; // bring to top
+    container.style.zIndex = maxZindex;
+  }
+
+  container.addEventListener('click', (event) => {
+    bringToTop();
   });
 
   container.addEventListener('dragstart', (event) => {
+    bringToTop();
     const style = window.getComputedStyle(event.target, null);
     event.dataTransfer.dragEffect = 'move';
     event.dataTransfer.setData('text/plain', container.getAttribute('id') + ',' +
