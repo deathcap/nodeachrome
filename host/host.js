@@ -1,4 +1,4 @@
-#!/Users/admin/.nvm/versions/node/v4.2.4/bin/node
+#!/Users/admin/.nvm/versions/node/v6.0.0/bin/node
 // ^ full path to node must be specified above, edit for your system. may also try:
 // #!/usr/local/bin/node
 
@@ -58,8 +58,9 @@ const unixServer = net.createServer((client) => {
   client
   .pipe(new nativeMessage.Input())
   .pipe(new nativeMessage.Transform((msg, push, done) => {
+    console.log('got msg',msg);
     // TODO: add useful commands
-    push({response: 'hi'});
+    push({response: msg});
     done();
   }))
   .pipe(new nativeMessage.Output())
