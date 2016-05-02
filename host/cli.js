@@ -7,13 +7,22 @@ const net = require('net');
 const path = require('path');
 const nativeMessage = require('chrome-native-messaging');
 
-const SOCKET_PATH = path.join(__dirname, 'nodeachrome.sock');
+if (process.argv.length < 3) {
+  process.stderr.write(`usage: ${process.argv[0]} [-e code | command]\n`);
+  process.exit(1);
+}
 
+const SOCKET_PATH = path.join(__dirname, 'nodeachrome.sock');
 const client = net.connect(SOCKET_PATH);
 
-// TODO: recognize -e flag to evaluate code
-const code = process.argv[2] || '1+2';
-const cmd = {fromUnix: true, args: ['eval', code]};
+let cmd;
+
+if (process.argv[2] === '-e') {
+  const code = process.argv[3] || '1+2';
+  cmd = {fromUnix: true, args: ['eval', code]};
+} else {
+  cmd = {fromUnix: true, args: process.argv.slice(2)};
+}
 
 const Readable = require('stream').Readable;
 const rs = new Readable({objectMode: true});
