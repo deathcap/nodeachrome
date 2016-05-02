@@ -13,7 +13,7 @@ const client = net.connect(SOCKET_PATH);
 
 // TODO: recognize -e flag to evaluate code
 const code = process.argv[2] || '1+2';
-const cmd = {method: 'eval', code};
+const cmd = {fromUnix: true, args: ['eval', code]};
 
 const Readable = require('stream').Readable;
 const rs = new Readable({objectMode: true});
@@ -24,7 +24,7 @@ const Writable = require('stream').Writable;
 const ws = new Writable({objectMode: true});
 ws._write = (chunk, encoding, cb) => {
   console.log('writable received',chunk,encoding);
-  // TODO: wait for this
+  // TODO: get data back
 };
 
 rs

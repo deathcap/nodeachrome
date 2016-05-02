@@ -34,6 +34,7 @@ window.addEventListener('message', (event) => {
       npm: () => require('./bin/npm'),
       browserify: () => require('./bin/browserify'),
       ls: () => require('./bin/ls'),
+      eval: () => require('./bin/eval'),
     };
 
     if (commands[process.argv[1]]) {
