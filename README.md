@@ -122,12 +122,23 @@ registry client to function, example:
 * require.resolve(x) returns x, modified browserify prelude in prelude2.js
 
 
-## tools
+## bin
 
-Bundled tools intended to run under this project: (note: may be broken)
+Bundled programs intended to run under this project: (note: may be broken)
 
 * [browserify](http://browserify.org) API (example: `browserify('foo.js').bundle().pipe(process.stdout)`)
 * [npm](https://www.npmjs.com) API
+
+See `app/userland/bin` for all included. 
+
+When Nodeachrome is running, it can be interacted with on the Unix command-line using `cli.js`, for example:
+
+```shell
+./host/cli.js -e '3+4'
+./host/cli.js npm view ucfirst
+```
+
+Each call spawns a new process and runs the command-line program.
 
 ## License
 

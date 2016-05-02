@@ -1,4 +1,4 @@
-#!/Users/admin/.nvm/versions/node/v4.2.4/bin/node
+#!/Users/admin/.nvm/versions/node/v6.0.0/bin/node
 // ^ full path to node must be specified above, edit for your system. may also try:
 // #!/usr/local/bin/node
 
@@ -16,11 +16,12 @@
 
 const process = require('process');
 const fs = require('fs');
+const net = require('net');
 const path = require('path');
+const Readable = require('stream').Readable;
 const nativeMessage = require('chrome-native-messaging');
-const input = new nativeMessage.Input();
-const transform = new nativeMessage.Transform(messageHandler);
-const output = new nativeMessage.Output();
+
+const SOCKET_PATH = path.join(__dirname, 'nodeachrome.sock');
 
 // Prepend all paths with this filesystem root
 const ROOT = path.join(__dirname, '../sandbox');
@@ -46,11 +47,33 @@ function choppath(abspath) {
   }
 }
 
+// Browser talks to us from stdin
 process.stdin
-  .pipe(input)
-  .pipe(transform)
-  .pipe(output)
+  .pipe(new nativeMessage.Input())
+  .pipe(new nativeMessage.Transform(messageHandler))
+  .pipe(new nativeMessage.Output())
   .pipe(process.stdout);
+
+// Unix command-line client talks to us on Unix domain socket
+const unixServer = net.createServer((client) => {
+  client
+  .pipe(new nativeMessage.Input())
+  .pipe(new nativeMessage.Transform((msg, push, done) => {
+    // Forward the message to the browser (over stdout)
+    const rs = new Readable({objectMode: true});
+    rs.push(msg);
+    rs.push(null);
+    rs.pipe(new nativeMessage.Output()).pipe(process.stdout);
+
+    // TODO: send back response to Unix client, after get back from browser
+    //push({response: msg});
+    //done();
+  }))
+  .pipe(new nativeMessage.Output())
+  .pipe(client);
+});
+fs.unlinkSync(SOCKET_PATH);
+unixServer.listen(SOCKET_PATH);
 
 function encodeResult(err, data, msgID, pid) {
   if (err) {
@@ -85,6 +108,8 @@ function messageHandler(msg, push, done) {
   if (method === 'echo') {
     push(msg);
     done();
+  } else if (method === 'fs._ping') {
+    cb(null, {});
   } else if (method === 'fs.access') {
     const path = fixpath(params[0]);
     if (params.length < 2) {

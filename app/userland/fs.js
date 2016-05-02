@@ -12,6 +12,11 @@ const sendNative = require('./native-proxy'); // in sandbox
 
 const fs = {};
 
+// not a filesystem operation, but makes sure the native host is up (otherwise a no-op)
+fs._ping = (cb) => {
+  sendNative('fs._ping', [], cb);
+};
+
 fs.access = (path, mode, cb) => {
   if (!cb) {
     cb = mode;
