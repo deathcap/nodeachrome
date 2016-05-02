@@ -24,6 +24,7 @@ border-radius: 10px;
 padding: 8px;
 border-style: groove;
 cursor: move;
+z-index: ${++maxZindex};
 /* Tile windows TODO: automatic organization, non-overlapping mode */
 position: absolute;
 top: ${20 * pid}px;
