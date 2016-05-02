@@ -18,6 +18,7 @@ const process = require('process');
 const fs = require('fs');
 const net = require('net');
 const path = require('path');
+const Readable = require('stream').Readable;
 const nativeMessage = require('chrome-native-messaging');
 
 const SOCKET_PATH = path.join(__dirname, 'nodeachrome.sock');
@@ -58,10 +59,15 @@ const unixServer = net.createServer((client) => {
   client
   .pipe(new nativeMessage.Input())
   .pipe(new nativeMessage.Transform((msg, push, done) => {
-    console.log('got msg',msg);
-    // TODO: add useful commands
-    push({response: msg});
-    done();
+    // Forward the message to the browser (over stdout)
+    const rs = new Readable({objectMode: true});
+    rs.push(msg);
+    rs.push(null);
+    rs.pipe(new nativeMessage.Output()).pipe(process.stdout);
+
+    // TODO: send back response to Unix client, after get back from browser
+    //push({response: msg});
+    //done();
   }))
   .pipe(new nativeMessage.Output())
   .pipe(client);

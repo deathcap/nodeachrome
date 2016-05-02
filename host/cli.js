@@ -20,6 +20,15 @@ const rs = new Readable({objectMode: true});
 rs.push(cmd);
 rs.push(null);
 
+const Writable = require('stream').Writable;
+const ws = new Writable({objectMode: true});
+ws._write = (chunk, encoding, cb) => {
+  console.log('writable received',chunk,encoding);
+  // TODO: wait for this
+};
+
 rs
 .pipe(new nativeMessage.Output())
-.pipe(client);
+.pipe(client)
+.pipe(new nativeMessage.Input())
+.pipe(ws);
