@@ -22,7 +22,10 @@ class BrowserStdout extends Writable {
     }
 
     const node = document.createTextNode(output);
-    document.getElementById('output').appendChild(node);
+    const terminal = document.getElementById('output');
+
+    terminal.appendChild(node);
+    terminal.scrollTop = terminal.scrollHeight; // scroll to bottom TODO: only if user hasn't scrolled up?
 
     process.nextTick(cb);
   }
