@@ -108,6 +108,8 @@ function messageHandler(msg, push, done) {
   if (method === 'echo') {
     push(msg);
     done();
+  } else if (method === 'fs._ping') {
+    cb(null, {});
   } else if (method === 'fs.access') {
     const path = fixpath(params[0]);
     if (params.length < 2) {
