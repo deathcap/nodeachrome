@@ -16,11 +16,11 @@
 
 const process = require('process');
 const fs = require('fs');
+const net = require('net');
 const path = require('path');
 const nativeMessage = require('chrome-native-messaging');
-const input = new nativeMessage.Input();
-const transform = new nativeMessage.Transform(messageHandler);
-const output = new nativeMessage.Output();
+
+const SOCKET_PATH = path.join(__dirname, 'nodeachrome.sock');
 
 // Prepend all paths with this filesystem root
 const ROOT = path.join(__dirname, '../sandbox');
@@ -46,11 +46,27 @@ function choppath(abspath) {
   }
 }
 
+// Browser talks to us from stdin
 process.stdin
-  .pipe(input)
-  .pipe(transform)
-  .pipe(output)
+  .pipe(new nativeMessage.Input())
+  .pipe(new nativeMessage.Transform(messageHandler))
+  .pipe(new nativeMessage.Output())
   .pipe(process.stdout);
+
+// Unix command-line client talks to us on Unix domain socket
+const unixServer = net.createServer((client) => {
+  client
+  .pipe(new nativeMessage.Input())
+  .pipe(new nativeMessage.Transform((msg, push, done) => {
+    // TODO: add useful commands
+    push({response: 'hi'});
+    done();
+  }))
+  .pipe(new nativeMessage.Output())
+  .pipe(client);
+});
+fs.unlinkSync(SOCKET_PATH);
+unixServer.listen(SOCKET_PATH);
 
 function encodeResult(err, data, msgID, pid) {
   if (err) {
