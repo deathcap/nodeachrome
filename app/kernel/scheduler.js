@@ -7,6 +7,9 @@ let nextPid = 1;
 let processes = new Map();
 let sources = new Map();
 
+// disable to see process output after they terminate for debugging
+const TERMINATE_DEAD_PROCESSES = true;
+
 const {createDraggableIframe} = require('./windowing');
 
 class Process {
@@ -47,6 +50,11 @@ class Process {
     // save own independent copy
     this.argv = JSON.parse(JSON.stringify(argv));
     this.env = JSON.parse(JSON.stringify(env));
+
+    if (redirects && redirects.unixID) {
+      // this process was launched from the Unix ./host/cli.js tool
+      this.unixID = redirects.unixID;
+    }
 
     this.state = 'waiting'; // awaiting execution
     this.iframe.setAttribute('src', '/userland/userland.html');
@@ -96,6 +104,17 @@ class Process {
     this.exitCode = code;
 
     this.title += ` (exited with code ${code})`;
+
+    if (this.unixID) {
+      // if process was created by Unix cli, let it know we exited
+      const sendNative = require('./native').sendNative;
+      sendNative('unix.exit', [this.unixID, this.pid, code],
+        -1, this.pid); // msgID -1 is no callback, since this native call was unsolicited (sent from kernel not userland)
+    }
+
+    if (TERMINATE_DEAD_PROCESSES) {
+      this.terminate(code);
+    }
   }
 
   static getFromPid(pid) {

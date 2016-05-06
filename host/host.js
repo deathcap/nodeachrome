@@ -304,6 +304,20 @@ function messageHandler(msg, push, done) {
 
     unixClient.push({cmd: 'stdout', output, fromPid});
     cb(null);
+  } else if (method === 'unix.exit') {
+    const toUnix = params[0];
+    const fromPid = params[1];
+    const code = params[2];
+
+    const unixClient = unixClients.get(toUnix);
+    if (!unixClient) {
+      cb(new Error(`no such Unix client: ${toUnix}`));
+      return;
+    }
+
+    unixClient.push({cmd: 'exit', fromPid, code});
+    cb(null);
+
   } else {
     push({error: {
       code: -32601, // defined in http://www.jsonrpc.org/specification#response_object

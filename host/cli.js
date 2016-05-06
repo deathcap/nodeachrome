@@ -52,6 +52,9 @@ ws._write = (msg, encoding, cb) => {
 
   if (msg.cmd === 'stdout') {
     process.stdout.write(msg.output);
+  } else if (msg.cmd === 'exit') {
+    console.log(`Process exited with code ${msg.code}`);
+    process.exit(msg.code);
   } else if (msg.cmd === 'ack') {
     //console.log('Host received',msg);
   } else {
