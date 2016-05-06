@@ -55,12 +55,16 @@ process.stdin
   .pipe(process.stdout);
 
 // Unix command-line client talks to us on Unix domain socket
+const unixClients = new Map();
 const unixServer = net.createServer((client) => {
   client.on('readable', () => {
     client
     .pipe(new nativeMessage.Input())
     .pipe(new nativeMessage.Transform((msg, push, done) => {
       console.error('unix got',msg);
+
+      unixClients.set(msg.unixID, {msg, push, done});
+
       // Forward the message to the browser (over stdout)
       const rs = new Readable({objectMode: true});
       rs.push(msg);

@@ -23,6 +23,28 @@ window.addEventListener('message', (event) => {
     process.env = event.data.env || {};
 
     console.log('sandbox received _start:',event.data);
+
+    if (event.data.redirects && event.data.redirects.stdout) {
+
+      const Writable = require('stream').Writable;
+      class RedirStdout extends Writable {
+        constructor(toUnix) {
+          super();
+          this.toUnix = toUnix;
+        }
+
+        _write(chunks, encoding, cb) {
+          const output = chunks.toString ? chunks.toString() : chunks;
+          console.log('REDIR STDOUT', this.toUnix, output);
+          debugger;
+          syscall({cmd: 'stdout', toUnix: this.toUnix, output});
+
+          process.nextTick(cb);
+        }
+      }
+      process.stdout = new RedirStdout(event.data.redirects.stdout);
+    }
+
     process.stdout.write(`\nStarted pid=${process.pid}, argv=${JSON.stringify(process.argv)}, env=${JSON.stringify(process.env)}\n`);
 
     event.source.postMessage({cmd: 'started'}, event.origin);

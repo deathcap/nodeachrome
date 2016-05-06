@@ -18,7 +18,7 @@ function disconnected(e) {
 function recvIncoming(msg) {
   //console.log('received incoming native msg:',msg);
   if (msg.fromUnix) { // unsolicited request from Unix, not a reply
-    new Process().exec(msg.args);
+    new Process().exec(msg.args, undefined, {stdout: msg.unixID});
     return;
   }
 

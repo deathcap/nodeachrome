@@ -17,11 +17,12 @@ const client = net.connect(SOCKET_PATH);
 
 let cmd;
 
+const unixID = process.pid; // unique identifier for host to correlate request/responses
 if (process.argv[2] === '-e') {
   const code = process.argv[3] || '1+2';
-  cmd = {fromUnix: true, args: ['eval', code]};
+  cmd = {fromUnix: true, unixID, args: ['eval', code]};
 } else {
-  cmd = {fromUnix: true, args: process.argv.slice(2)};
+  cmd = {fromUnix: true, unixID, args: process.argv.slice(2)};
 }
 
 const Readable = require('stream').Readable;
