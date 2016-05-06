@@ -164,7 +164,10 @@ window.addEventListener('message', (event) => {
   } else if (event.data.cmd === 'stdout') {
     const sourceProcess = Process.getFromSource(event.source);
 
-    // TODO: send toUnix
+    // Forward redirected stream to native
+    const sendNative = require('./native').sendNative;
+    sendNative('unix.stdout', [event.data.toUnix, sourceProcess.pid, event.data.output],
+        -1, -1); // TODO: no msgID, pid
   }
 });
 

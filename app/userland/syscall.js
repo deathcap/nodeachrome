@@ -36,7 +36,6 @@ window.addEventListener('message', (event) => {
         _write(chunks, encoding, cb) {
           const output = chunks.toString ? chunks.toString() : chunks;
           console.log('REDIR STDOUT', this.toUnix, output);
-          debugger;
           syscall({cmd: 'stdout', toUnix: this.toUnix, output});
 
           process.nextTick(cb);

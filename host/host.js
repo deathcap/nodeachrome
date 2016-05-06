@@ -288,6 +288,16 @@ function messageHandler(msg, push, done) {
       });
       done();
     });
+  } else if (method === 'unix.stdout') {
+    const toUnix = params[0];
+    const fromPid = params[1];
+    const output = params[2];
+
+    console.log('received unix.stdout',params);
+    const unixClient = unixClients.get(toUnix);
+
+    unixClient.push({cmd: 'stdout', output, fromPid});
+
   } else {
     push({error: {
       code: -32601, // defined in http://www.jsonrpc.org/specification#response_object
