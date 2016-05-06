@@ -21,7 +21,7 @@ const path = require('path');
 const Readable = require('stream').Readable;
 const nativeMessage = require('chrome-native-messaging');
 
-const SOCKET_PATH = path.join(__dirname, 'nodeachrome.sock');
+const SOCKET_PATH = path.join(__dirname, 'sock');
 
 // Prepend all paths with this filesystem root
 const ROOT = path.join(__dirname, '../sandbox');
@@ -72,7 +72,11 @@ const unixServer = net.createServer((client) => {
   .pipe(new nativeMessage.Output())
   .pipe(client);
 });
-fs.unlinkSync(SOCKET_PATH);
+try {
+  fs.unlinkSync(SOCKET_PATH);
+} catch (e) {
+  // ignore
+}
 unixServer.listen(SOCKET_PATH);
 
 function encodeResult(err, data, msgID, pid) {

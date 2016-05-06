@@ -12,7 +12,7 @@ if (process.argv.length < 3) {
   process.exit(1);
 }
 
-const SOCKET_PATH = path.join(__dirname, 'nodeachrome.sock');
+const SOCKET_PATH = path.join(__dirname, 'sock');
 const client = net.connect(SOCKET_PATH);
 
 let cmd;
