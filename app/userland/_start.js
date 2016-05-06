@@ -2,6 +2,8 @@
 
 // Process initialization
 
+const {HtmlStdout, RedirStdout} = require('./stdout');
+
 // Save kernel data for syscall
 let kernel = {
   source: null,
@@ -26,30 +28,18 @@ window.addEventListener('message', (event) => {
 
     console.log('sandbox received _start:',event.data);
 
+    // Setup streams
     if (event.data.redirects && event.data.redirects.stdout) {
-
-      const Writable = require('stream').Writable;
-      class RedirStdout extends Writable {
-        constructor(toUnix) {
-          super();
-          this.toUnix = toUnix;
-        }
-
-        _write(chunks, encoding, cb) {
-          const output = chunks.toString ? chunks.toString() : chunks;
-          console.log('REDIR STDOUT', this.toUnix, output);
-          const syscall = require('./syscall').syscall;
-
-          syscall({cmd: 'stdout', toUnix: this.toUnix, output});
-
-          process.nextTick(cb);
-        }
-      }
       process.stdout = new RedirStdout(event.data.redirects.stdout);
-      // TODO: also see to BrowserStdout?
+      // TODO: also see to BrowserStdout? (tee)
+    } else {
+      process.stdout = new HtmlStdout({label: 'stdout'});
     }
+    // TODO: allow redirecting stderr too
+    process.stderr = new HtmlStdout({label: 'stderr'});
 
-    process.stdout.write(`\nStarted pid=${process.pid}, argv=${JSON.stringify(process.argv)}, env=${JSON.stringify(process.env)}\n`);
+
+    process.stderr.write(`\nStarted pid=${process.pid}, argv=${JSON.stringify(process.argv)}, env=${JSON.stringify(process.env)}\n`);
 
     event.source.postMessage({cmd: 'started'}, event.origin);
 

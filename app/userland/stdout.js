@@ -1,11 +1,11 @@
 'use strict';
 
-// Standard output stream for the browser
-// Inspired by https://github.com/kumavis/browser-stdout TODO: pr?
-
 const Writable = require('stream').Writable;
 
-class BrowserStdout extends Writable {
+// Standard output stream for the browser
+// Inspired by https://github.com/kumavis/browser-stdout which uses console.log()
+// instead, HtmlStdout writes to document
+class HtmlStdout extends Writable {
   constructor(opts) {
     super(opts);
 
@@ -31,11 +31,36 @@ class BrowserStdout extends Writable {
   }
 }
 
-process.stdout = new BrowserStdout({label: 'stdout'});
-process.stderr = new BrowserStdout({label: 'stderr'});
+// Redirects userland stdout back to kernel
+class RedirStdout extends Writable {
+  constructor(toUnix) {
+    super();
+    this.toUnix = toUnix;
+  }
+
+  _write(chunks, encoding, cb) {
+    const output = chunks.toString ? chunks.toString() : chunks;
+    console.log('REDIR STDOUT', this.toUnix, output);
+    const syscall = require('./syscall').syscall;
+
+    syscall({cmd: 'stdout', toUnix: this.toUnix, output});
+
+    process.nextTick(cb);
+  }
+}
+
+// set in _start
+// TODO: remove these but require('npm') uses them, too early
+process.stdout = new HtmlStdout({label: 'stdout'});
+process.stderr = new HtmlStdout({label: 'stderr'});
 
 // TODO: real stream stdin
 // this is enough for browserify_cli to not choke
 process.stdin = {
   isTTY: false,
+};
+
+module.exports = {
+  HtmlStdout,
+  RedirStdout,
 };
