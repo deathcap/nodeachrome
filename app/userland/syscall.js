@@ -35,6 +35,8 @@ window.addEventListener('message', (event) => {
       browserify: () => require('./bin/browserify'),
       ls: () => require('./bin/ls'),
       eval: () => require('./bin/eval'),
+      false: () => require('./bin/false'),
+      true: () => require('./bin/true'),
     };
 
     if (commands[process.argv[1]]) {
