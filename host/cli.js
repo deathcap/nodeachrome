@@ -26,8 +26,18 @@ if (process.argv[2] === '-e') {
 
 const Readable = require('stream').Readable;
 const rs = new Readable({objectMode: true});
-rs.push(cmd);
-rs.push(null);
+let sentCmd = false;
+rs._read = (size) => {
+  if (!sentCmd) {
+    rs.push(cmd);
+    sentCmd = true;
+    return;
+  }
+
+  //rs.push(null);
+  // keep the connection open
+  //rs.push(null);
+};
 
 const Writable = require('stream').Writable;
 const ws = new Writable({objectMode: true});
@@ -39,5 +49,9 @@ ws._write = (chunk, encoding, cb) => {
 rs
 .pipe(new nativeMessage.Output())
 .pipe(client)
-.pipe(new nativeMessage.Input())
-.pipe(ws);
+
+client.on('readable', () => {
+  console.log('client is readable');
+  console.log('read=',client.read().toString());
+  //client.pipe(new nativeMessage.Input()).pipe(ws);
+});

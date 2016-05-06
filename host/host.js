@@ -56,21 +56,30 @@ process.stdin
 
 // Unix command-line client talks to us on Unix domain socket
 const unixServer = net.createServer((client) => {
-  client
-  .pipe(new nativeMessage.Input())
-  .pipe(new nativeMessage.Transform((msg, push, done) => {
-    // Forward the message to the browser (over stdout)
-    const rs = new Readable({objectMode: true});
-    rs.push(msg);
-    rs.push(null);
-    rs.pipe(new nativeMessage.Output()).pipe(process.stdout);
+  client.on('readable', () => {
+    client
+    .pipe(new nativeMessage.Input())
+    .pipe(new nativeMessage.Transform((msg, push, done) => {
+      console.error('unix got',msg);
+      // Forward the message to the browser (over stdout)
+      const rs = new Readable({objectMode: true});
+      rs.push(msg);
+      rs.push(null);
+      rs.pipe(new nativeMessage.Output()).pipe(process.stdout);
 
-    // TODO: send back response to Unix client, after get back from browser
-    //push({response: msg});
-    //done();
-  }))
-  .pipe(new nativeMessage.Output())
-  .pipe(client);
+      // TODO: send back response to Unix client, after get back from browser
+      push({response: msg});
+      //done();
+
+      let n = 0;
+      setInterval(() => {
+        push({counter: n++});
+        //done();
+      }, 1000);
+    }))
+    .pipe(new nativeMessage.Output())
+    .pipe(client);
+  });
 });
 try {
   fs.unlinkSync(SOCKET_PATH);
