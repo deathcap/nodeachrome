@@ -71,8 +71,8 @@ const unixServer = net.createServer((client) => {
       rs.push(null);
       rs.pipe(new nativeMessage.Output()).pipe(process.stdout);
 
-      // TODO: send back response to Unix client, after get back from browser
-      push({response: msg});
+      // Just acknowledge we received this message
+      push({cmd: 'ack', msg});
       //done();
 
       let n = 0;

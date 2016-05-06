@@ -52,8 +52,29 @@ rs
 .pipe(client)
 
 client.on('readable', () => {
-  console.log('client is readable');
-  const msg = client.read();
-  if (msg) console.log('read=', msg.toString());
+  //console.log('client is readable');
+  const data = client.read();
+
+  if (data) {
+    // Decode the buffer to JSON
+    //console.log('read=', data.toString());
+
+    const rs = new Readable;
+    const ws = new Writable({objectMode: true});
+    ws._write = (msg, encoding, cb) => {
+      //console.log('msg',msg);
+
+      if (msg.cmd === 'stdout') {
+        process.stdout.write(msg.output);
+      } else if (msg.cmd === 'ack') {
+        console.log('Host received',msg);
+      } else {
+        console.log('Unknown message:',msg);
+      }
+    };
+    rs.push(data);
+    rs.push(null);
+    rs.pipe(new nativeMessage.Input()).pipe(ws);
+  }
   //client.pipe(new nativeMessage.Input()).pipe(ws);
 });
