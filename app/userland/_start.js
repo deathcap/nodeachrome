@@ -60,7 +60,10 @@ window.addEventListener('message', (event) => {
     };
 
     if (commands[process.argv[1]]) {
-      commands[process.argv[1]]();
+      const exitCode = commands[process.argv[1]]();
+      process.nextTick(() => {
+        process.exit(exitCode || 0);
+      });
     }
   }
 });
