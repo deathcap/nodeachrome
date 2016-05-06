@@ -3,6 +3,7 @@
 // Process initialization
 
 const {HtmlStdout, RedirStdout} = require('./stdout');
+const tee = require('tee');
 
 // Save kernel data for syscall
 let kernel = {
@@ -29,14 +30,16 @@ window.addEventListener('message', (event) => {
     console.log('sandbox received _start:',event.data);
 
     // Setup streams
-    if (event.data.redirects && event.data.redirects.stdout) {
-      process.stdout = new RedirStdout(event.data.redirects.stdout);
-      // TODO: also see to BrowserStdout? (tee)
-    } else {
-      process.stdout = new HtmlStdout({label: 'stdout'});
-    }
-    // TODO: allow redirecting stderr too
+    process.stdout = new HtmlStdout({label: 'stdout'});
     process.stderr = new HtmlStdout({label: 'stderr'});
+
+    if (event.data.redirects) {
+      if (event.data.redirects.stdout) {
+        // tee to stream to both
+        process.stdout = tee(process.stdout, new RedirStdout(event.data.redirects.stdout));
+      }
+      // TODO: allow redirecting stderr too
+    }
 
 
     process.stderr.write(`\nStarted pid=${process.pid}, argv=${JSON.stringify(process.argv)}, env=${JSON.stringify(process.env)}\n`);
