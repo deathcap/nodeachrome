@@ -53,6 +53,7 @@ rs
 
 client.on('readable', () => {
   console.log('client is readable');
-  console.log('read=',client.read().toString());
+  const msg = client.read();
+  if (msg) console.log('read=', msg.toString());
   //client.pipe(new nativeMessage.Input()).pipe(ws);
 });

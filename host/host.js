@@ -293,11 +293,15 @@ function messageHandler(msg, push, done) {
     const fromPid = params[1];
     const output = params[2];
 
-    console.log('received unix.stdout',params);
+    console.error('received unix.stdout',params);
     const unixClient = unixClients.get(toUnix);
+    if (!unixClient) {
+      cb(new Error(`no such Unix client: ${toUnix}`));
+      return;
+    }
 
     unixClient.push({cmd: 'stdout', output, fromPid});
-
+    cb(null);
   } else {
     push({error: {
       code: -32601, // defined in http://www.jsonrpc.org/specification#response_object
