@@ -53,7 +53,7 @@ ws._write = (msg, encoding, cb) => {
   if (msg.cmd === 'stdout') {
     process.stdout.write(msg.output);
   } else if (msg.cmd === 'ack') {
-    console.log('Host received',msg);
+    //console.log('Host received',msg);
   } else {
     console.log('Unknown message:',msg);
   }

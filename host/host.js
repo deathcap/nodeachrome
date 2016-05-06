@@ -75,11 +75,13 @@ const unixServer = net.createServer((client) => {
       push({cmd: 'ack', msg});
       //done();
 
+      /* for debugging throughput
       let n = 0;
       setInterval(() => {
         push({counter: n++});
         //done();
       }, 1000);
+      */
     }))
     .pipe(new nativeMessage.Output())
     .pipe(client);
