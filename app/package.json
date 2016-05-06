@@ -17,7 +17,8 @@
     "browserify": "^13.0.0",
     "npm": "deathcap/npm#static-require",
     "npm-registry-client": "deathcap/npm-registry-client#browserify",
-    "shellasync": "^2.1.0"
+    "shellasync": "^2.1.0",
+    "tee": "^0.2.0"
   },
   "license": "MIT"
 }

@@ -18,7 +18,7 @@ function disconnected(e) {
 function recvIncoming(msg) {
   //console.log('received incoming native msg:',msg);
   if (msg.fromUnix) { // unsolicited request from Unix, not a reply
-    new Process().exec(msg.args);
+    new Process().exec(msg.args, undefined, {stdout: msg.unixID});
     return;
   }
 
@@ -34,7 +34,7 @@ function connectPort() {
 }
 
 // Send message using Google Chrome Native Messaging API to a native code host
-function sendNative(method, params, msgID, pid) {
+function sendNative(method, params, msgID, pid) { // TODO: change to take msg, but encode msg.params?
 
   const paramsEncoded = [];
   for (let i = 0; i < params.length; ++i) {
@@ -77,3 +77,6 @@ window.addEventListener('message', (event) => {
   }
 });
 
+module.exports = {
+  sendNative,
+};

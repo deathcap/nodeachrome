@@ -39,7 +39,7 @@ class Process {
   }
 
   // Execute code with arguments and environment, like Unix fork/exec or posix_spawn/system
-  exec(argv, env) {
+  exec(argv, env, redirects) {
     console.log(`Process exec ${this.pid}, argv ${JSON.stringify(argv)}, env ${JSON.stringify(env)}`);
 
     if (!env) env = global.ENV; // inherit from kernel TODO: per-process inheritance, forking
@@ -55,7 +55,7 @@ class Process {
 
       sources.set(this.iframe.contentWindow, this);
 
-      this.iframe.contentWindow.postMessage({cmd: '_start', pid: this.pid, argv: this.argv, env: this.env}, '*');
+      this.iframe.contentWindow.postMessage({cmd: '_start', pid: this.pid, argv: this.argv, env: this.env, redirects}, '*');
       this.state = 'ready'; // ready until process confirms it started by posting reply back to _start: 'started'
     });
     // TODO: add path, to require and/or readFile to execute and run
@@ -161,6 +161,13 @@ window.addEventListener('message', (event) => {
     const sourceProcess = Process.getFromSource(event.source);
 
     sourceProcess.title = event.data.title;
+  } else if (event.data.cmd === 'stdout') {
+    const sourceProcess = Process.getFromSource(event.source);
+
+    // Forward redirected stream to native
+    const sendNative = require('./native').sendNative;
+    sendNative('unix.stdout', [event.data.toUnix, sourceProcess.pid, event.data.output],
+        -1, sourceProcess.pid); // msgID -1 is no callback, since this native call was unsolicited (sent from kernel not userland)
   }
 });
 
