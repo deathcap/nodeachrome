@@ -16,6 +16,11 @@ window.addEventListener('message', (event) => {
 });
 
 function handleIncoming(msg) {
+  if (msg.msgID === -1) {
+    // special case: no callback
+    return;
+  }
+
   const cb = callbacks.get(msg.msgID);
   if (!cb) {
     throw new Error(`received native host message with unexpected id: ${msg.msgID} in ${JSON.stringify(msg)}`);

@@ -42,6 +42,7 @@ window.addEventListener('message', (event) => {
         }
       }
       process.stdout = new RedirStdout(event.data.redirects.stdout);
+      // TODO: also see to BrowserStdout?
     }
 
     process.stdout.write(`\nStarted pid=${process.pid}, argv=${JSON.stringify(process.argv)}, env=${JSON.stringify(process.env)}\n`);
