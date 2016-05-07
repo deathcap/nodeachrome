@@ -180,13 +180,6 @@ window.addEventListener('message', (event) => {
     const sourceProcess = Process.getFromSource(event.source);
 
     sourceProcess.title = event.data.title;
-  } else if (event.data.cmd === 'stdout') {
-    const sourceProcess = Process.getFromSource(event.source);
-
-    // Forward redirected stream to native
-    const sendNative = require('./native').sendNative;
-    sendNative('unix.stdout', [event.data.toUnix, sourceProcess.pid, event.data.output],
-        -1, sourceProcess.pid); // msgID -1 is no callback, since this native call was unsolicited (sent from kernel not userland)
   }
 });
 

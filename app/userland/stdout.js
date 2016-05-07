@@ -43,9 +43,10 @@ class RedirStdout extends Writable {
     console.log('REDIR STDOUT', this.toUnix, output);
     const syscall = require('./syscall').syscall;
 
-    syscall({cmd: 'stdout', toUnix: this.toUnix, output});
-
-    process.nextTick(cb);
+    const sendNative = require('./native-proxy');
+    sendNative('unix.stdout', [this.toUnix,
+        process.pid, // TODO: secure process.pid? (have kernel set it instead of userland?) not clear if needed
+        output], cb);
   }
 }
 
