@@ -27,6 +27,4 @@ Object.assign(global, {
   ENV: ENV,
 });
 
-console.log('creating initial process');
-const init = new Process();
-init.exec(['init']);
+require('./boot.js').boot();

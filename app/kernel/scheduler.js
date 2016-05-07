@@ -180,6 +180,23 @@ window.addEventListener('message', (event) => {
     const sourceProcess = Process.getFromSource(event.source);
 
     sourceProcess.title = event.data.title;
+  } else if (event.data.cmd === 'reboot') {
+    const sourceProcess = Process.getFromSource(event.source);
+    console.log(`Reboot initiated by process ${sourceProcess.pid}`);
+    // Any process can reboot TODO: require special privileges? if only had privileges
+
+    // Forcefully kill all processes
+    // TODO: first try to gracefully terminate with SIGTERM, give some time, then force
+    for (let proc of processes.values()) {
+      proc.terminate(); // TODO: code to signify terminated by reboot?
+    }
+
+    // Reset to clean state
+    processes.clear();
+    sources.clear();
+    nextPid = 1;
+
+    require('./boot.js').boot();
   }
 });
 
