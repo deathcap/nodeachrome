@@ -35,11 +35,12 @@ Object.assign(global, {
   util: require('url'),
   vm: require('vm'),
   zlib: require('zlib'),
-
-  // Useful apps
-  browserify: require('browserify'),
-  npm: require('npm'),
 });
+
+// Useful apps
+// require()'d in a getter so they don't execute before _start
+Object.defineProperty(global, 'browserify', {get: () => require('browserify')});
+Object.defineProperty(global, 'npm', {get: () => require('npm')});
 
 window.addEventListener('message', (event) => {
   if (event.data.cmd === 'eval') {

@@ -49,10 +49,9 @@ class RedirStdout extends Writable {
   }
 }
 
-// set in _start
-// TODO: remove these but require('npm') uses them, too early
-process.stdout = new HtmlStdout({label: 'stdout'});
-process.stderr = new HtmlStdout({label: 'stderr'});
+// set in _start, if accesses here is too early
+process.stdout = null;
+process.stderr = null;
 
 // TODO: real stream stdin
 // this is enough for browserify_cli to not choke
