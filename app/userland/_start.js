@@ -33,12 +33,13 @@ window.addEventListener('message', (event) => {
     process.stdout = new HtmlStdout({label: 'stdout'});
     process.stderr = new HtmlStdout({label: 'stderr'});
 
-    if (event.data.redirects) {
-      if (event.data.redirects.stdout) {
-        // tee to stream to both
-        process.stdout = tee(process.stdout, new RedirUnixStdout(event.data.redirects.stdout));
+    if (event.data.opts) {
+      if ('unixID' in event.data.opts) {
+        // Launched from Unix cli, so redirect stdout back
+        // tee to stream both, show on HtmlStdout and RedirUnixStdout
+        process.stdout = tee(process.stdout, new RedirUnixStdout(event.data.opts.unixID));
+        //process.stderr = tee(process.stderr, new RedirUnixStdout(event.data.opts.unixID)); // TODO: should redirect stderr too? probably, but need to differentiate
       }
-      // TODO: allow redirecting stderr too
     }
 
 

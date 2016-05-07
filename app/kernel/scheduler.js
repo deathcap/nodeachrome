@@ -42,7 +42,7 @@ class Process {
   }
 
   // Execute code with arguments and environment, like Unix fork/exec or posix_spawn/system
-  exec(argv, env, redirects) {
+  exec(argv, env, opts={}) {
     console.log(`Process exec ${this.pid}, argv ${JSON.stringify(argv)}, env ${JSON.stringify(env)}`);
 
     if (!env) env = global.ENV; // inherit from kernel TODO: per-process inheritance, forking
@@ -51,9 +51,9 @@ class Process {
     this.argv = JSON.parse(JSON.stringify(argv));
     this.env = JSON.parse(JSON.stringify(env));
 
-    if (redirects && redirects.unixID) {
+    if (opts.unixID) {
       // this process was launched from the Unix ./host/cli.js tool
-      this.unixID = redirects.unixID;
+      this.unixID = opts.unixID;
     }
 
     this.state = 'waiting'; // awaiting execution
@@ -63,7 +63,7 @@ class Process {
 
       sources.set(this.iframe.contentWindow, this);
 
-      this.iframe.contentWindow.postMessage({cmd: '_start', pid: this.pid, argv: this.argv, env: this.env, redirects}, '*');
+      this.iframe.contentWindow.postMessage({cmd: '_start', pid: this.pid, argv: this.argv, env: this.env, opts}, '*');
       this.state = 'ready'; // ready until process confirms it started by posting reply back to _start: 'started'
     });
     // TODO: add path, to require and/or readFile to execute and run
