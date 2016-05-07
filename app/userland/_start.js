@@ -2,7 +2,7 @@
 
 // Process initialization
 
-const {HtmlStdout, RedirStdout} = require('./stdout');
+const {HtmlStdout, RedirUnixStdout} = require('./stdout');
 const tee = require('tee');
 
 // Save kernel data for syscall
@@ -36,7 +36,7 @@ window.addEventListener('message', (event) => {
     if (event.data.redirects) {
       if (event.data.redirects.stdout) {
         // tee to stream to both
-        process.stdout = tee(process.stdout, new RedirStdout(event.data.redirects.stdout));
+        process.stdout = tee(process.stdout, new RedirUnixStdout(event.data.redirects.stdout));
       }
       // TODO: allow redirecting stderr too
     }

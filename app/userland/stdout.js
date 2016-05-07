@@ -31,8 +31,8 @@ class HtmlStdout extends Writable {
   }
 }
 
-// Redirects userland stdout back to kernel
-class RedirStdout extends Writable {
+// Redirects userland stdout back to Unix command-line
+class RedirUnixStdout extends Writable {
   constructor(toUnix) {
     super();
     this.toUnix = toUnix;
@@ -62,5 +62,5 @@ process.stdin = {
 
 module.exports = {
   HtmlStdout,
-  RedirStdout,
+  RedirUnixStdout,
 };
