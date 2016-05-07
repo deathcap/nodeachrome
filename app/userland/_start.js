@@ -57,6 +57,7 @@ window.addEventListener('message', (event) => {
       false: () => require('./bin/false'),
       true: () => require('./bin/true'),
       echo: () => require('./bin/echo'),
+      kill: () => require('./bin/kill'),
     };
 
     if (commands[process.argv[1]]) {
