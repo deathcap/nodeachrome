@@ -41,12 +41,7 @@ window.addEventListener('message', (event) => {
         //process.stderr = tee(process.stderr, new RedirUnixStdout(event.data.opts.unixID)); // TODO: should redirect stderr too? probably, but need to differentiate
       }
       if (event.data.opts.stdio) {
-        // https://nodejs.org/api/child_process.html#child_process_options_stdio
         let stdio = event.data.opts.stdio;
-        // stdin, stdout, stderr
-        if (stdio === 'pipe') stdio = ['pipe', 'pipe', 'pipe'];
-        if (stdio === 'ignore') stdio = ['ignore', 'ignore', 'ignore'];
-        if (stdio === 'inherit') stdio = [0,1,2];
 
         if (stdio[0] === 'pipe') {
           // TODO: stdin
