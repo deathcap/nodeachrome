@@ -2,7 +2,7 @@
 
 // Process initialization
 
-const {HtmlStdout, RedirUnixStdout} = require('./stdout');
+const {HtmlStdout, RedirUnixStdout, RedirParentStdout} = require('./stdout');
 const tee = require('tee');
 
 // Save kernel data for syscall
@@ -39,6 +39,22 @@ window.addEventListener('message', (event) => {
         // tee to stream both, show on HtmlStdout and RedirUnixStdout
         process.stdout = tee(process.stdout, new RedirUnixStdout(event.data.opts.unixID));
         //process.stderr = tee(process.stderr, new RedirUnixStdout(event.data.opts.unixID)); // TODO: should redirect stderr too? probably, but need to differentiate
+      }
+      if (event.data.opts.stdio) {
+        // https://nodejs.org/api/child_process.html#child_process_options_stdio
+        let stdio = event.data.opts.stdio;
+        // stdin, stdout, stderr
+        if (stdio === 'pipe') stdio = ['pipe', 'pipe', 'pipe'];
+        if (stdio === 'ignore') stdio = ['ignore', 'ignore', 'ignore'];
+        if (stdio === 'inherit') stdio = [0,1,2];
+
+        if (stdio[0] === 'pipe') {
+          // TODO: stdin
+        } if (stdio[1] === 'pipe') {
+          process.stdout = tee(process.stdout, new RedirParentStdout(event.data.parentPid));
+        } else if (stdio[2] === 'pipe') {
+          process.stderr = tee(process.stderr, new RedirParentStdout(event.data.parentPid));
+        }
       }
     }
 

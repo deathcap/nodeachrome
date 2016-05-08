@@ -41,12 +41,25 @@ class RedirUnixStdout extends Writable {
   _write(chunks, encoding, cb) {
     const output = chunks.toString ? chunks.toString() : chunks;
     console.log('REDIR STDOUT', this.toUnix, output);
-    const syscall = require('./syscall').syscall;
-
     const sendNative = require('./native-proxy');
+
     sendNative('unix.stdout', [this.toUnix,
         process.pid, // TODO: secure process.pid? (have kernel set it instead of userland?) not clear if needed
         output], cb);
+  }
+}
+
+class RedirParentStdout extends Writable {
+  constructor(parentPid) {
+    super();
+    this.parentPid = parentPid;
+  }
+
+  _write(chunks, encoding, cb) {
+    const output = chunks.toString ? chunks.toString() : chunks;
+
+    const syscall = require('./syscall').syscall;
+    syscall({cmd: 'stdout', output, parentPid: this.parentPid});
   }
 }
 
@@ -63,4 +76,5 @@ process.stdin = {
 module.exports = {
   HtmlStdout,
   RedirUnixStdout,
+  RedirParentStdout,
 };

@@ -14,9 +14,10 @@ const {createDraggableIframe} = require('./windowing');
 
 class Process {
   // Create a new "userland" sandboxed execution context (= process)
-  constructor() {
+  constructor(parentPid) {
     this.state = 'new'; // see https://en.wikipedia.org/wiki/Process_state
     this.pid = nextPid;
+    this.parentPid = parentPid;
     nextPid += 1;
 
     Process.broadcast({cmd: 'nextPid', nextPid});
@@ -63,7 +64,12 @@ class Process {
 
       sources.set(this.iframe.contentWindow, this);
 
-      this.iframe.contentWindow.postMessage({cmd: '_start', pid: this.pid, argv: this.argv, env: this.env, opts}, '*');
+      const pid = this.pid;
+      const argv = this.argv;
+      const env = this.env;
+      const parentPid = this.parentPid;
+
+      this.iframe.contentWindow.postMessage({cmd: '_start', pid, argv, env, parentPid, opts}, '*');
       this.state = 'ready'; // ready until process confirms it started by posting reply back to _start: 'started'
     });
     // TODO: add path, to require and/or readFile to execute and run
@@ -164,13 +170,15 @@ window.addEventListener('message', (event) => {
     // TODO: when should this exit? leaving up for now to see terminated process output
     //sourceProcess.terminate(code);
   } else if (event.data.cmd === 'spawn') {
+    const sourceProcess = Process.getFromSource(event.source);
+
     const command = event.data.command;
     const args = event.data.args;
 
     const argv = [command].concat(event.data.args);
     const env = event.data.env;
 
-    const newProcess = new Process();
+    const newProcess = new Process(sourceProcess.pid);
     if (event.data.nextPid && newProcess.pid !== event.data.nextPid) {
       throw new Error(`spawn() expected pid ${event.data.nextPid} but got ${newProcess.pid}, race condition detected?`);
     }
