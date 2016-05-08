@@ -63,6 +63,15 @@ class RedirParentStdout extends Writable {
   }
 }
 
+window.addEventListener('message', (event) => {
+  if (event.data.cmd === 'stdin') {
+    const input = event.data.input;
+
+    console.log('got stdin',event.data);
+    // TODO: make available on process.stdin
+  }
+});
+
 // set in _start, if accesses here is too early
 process.stdout = null;
 process.stderr = null;

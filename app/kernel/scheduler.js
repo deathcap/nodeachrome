@@ -206,6 +206,14 @@ window.addEventListener('message', (event) => {
     nextPid = 1;
 
     require('./boot.js').boot();
+  } else if (event.data.cmd === 'stdout') {
+    const sourceProcess = Process.getFromSource(event.source);
+
+    const output = event.data.output;
+    const targetProcess = Process.getFromPid(event.data.parentPid);
+    if (!targetProcess) throw new Error(`stdout redir invalid parent pid in ${event.data}`);
+
+    targetProcess.postMessage({cmd: 'stdin', input: output, childPid: sourceProcess.pid});
   }
 });
 
