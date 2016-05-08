@@ -5,6 +5,8 @@
 // https://nodejs.org/api/child_process.html
 
 const EventEmitter = require('events').EventEmitter;
+const Readable = require('stream').Readable;
+const Writable = require('stream').Writable;
 const syscall = require('./syscall').syscall;
 
 let nextPid = null;
@@ -14,6 +16,10 @@ class ChildProcess extends EventEmitter {
     super();
 
     this.pid = pid;
+
+    this.stdout = new Readable();
+    this.stderr = new Readable();
+    this.stdin = new Writable();
   }
 
   kill(signal='SIGTERM') {
