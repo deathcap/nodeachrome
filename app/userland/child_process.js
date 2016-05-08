@@ -30,7 +30,7 @@ window.addEventListener('message', (event) => {
 
 // https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options
 function spawn(command, args=[], options={}) {
-  if (Array.isArray(args)) throw new TypeError(`Incorrect value for args option, not array: ${args}`);
+  if (!Array.isArray(args)) throw new TypeError(`Incorrect value for args option, not array: ${args}`);
  
   const cwd = options.cwd !== undefined ? options.cwd : process.cwd(); // hmm, but docs say defaults to 'undefined
   const env = options.env !== undefined ? options.env : process.env; // inherit from parent
@@ -43,7 +43,6 @@ function spawn(command, args=[], options={}) {
     if (options.stdio[0] === process.stdin) options.stdio[0] = 0;
     if (options.stdio[1] === process.stdout) options.stdio[1] = 1;
     if (options.stdio[2] === process.stderr) options.stdio[2] = 2;
-    }
   }
 
   syscall({cmd: 'spawn', command, args, env, opts: options, expectedPid: childPid});
