@@ -1,6 +1,7 @@
 'use strict';
 
 const Writable = require('stream').Writable;
+const Readable = require('stream').Readable;
 
 // Standard output stream for the browser
 // Inspired by https://github.com/kumavis/browser-stdout which uses console.log()
@@ -63,12 +64,22 @@ class RedirParentStdout extends Writable {
   }
 }
 
+class RedirChildStdin extends Readable {
+  constructor() {
+    super();
+  }
+
+  _read(size) {
+  }
+}
+
 window.addEventListener('message', (event) => {
   if (event.data.cmd === 'stdin') {
     const input = event.data.input;
 
     console.log('got stdin',event.data);
-    // TODO: make available on process.stdin
+
+    process.stdin.push(input);
   }
 });
 
@@ -76,11 +87,8 @@ window.addEventListener('message', (event) => {
 process.stdout = null;
 process.stderr = null;
 
-// TODO: real stream stdin
-// this is enough for browserify_cli to not choke
-process.stdin = {
-  isTTY: false,
-};
+process.stdin = new RedirChildStdin();
+process.stdin.isTTY = false; // required for browserify_cli to not choke
 
 module.exports = {
   HtmlStdout,
