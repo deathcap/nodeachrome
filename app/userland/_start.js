@@ -76,6 +76,7 @@ window.addEventListener('message', (event) => {
       echo: () => require('./bin/echo'),
       kill: () => require('./bin/kill'),
       reboot: () => require('./bin/reboot'),
+      cat: () => require('./bin/cat'),
     };
 
     if (commands[process.argv[1]]) {
