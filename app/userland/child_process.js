@@ -38,7 +38,7 @@ function spawn(command, args=[], options={}) {
   // (passed and checked in kernel spawn handler to detect races)
   const childPid = nextPid;
 
-  syscall({cmd: 'spawn', command, args, env, expectedPid: childPid});
+  syscall({cmd: 'spawn', command, args, env, opts: options, expectedPid: childPid});
 
   return new ChildProcess(childPid);
 }

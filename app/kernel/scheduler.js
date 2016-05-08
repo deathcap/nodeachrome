@@ -177,13 +177,14 @@ window.addEventListener('message', (event) => {
 
     const argv = [command].concat(event.data.args);
     const env = event.data.env;
+    const opts = event.data.opts;
 
     const newProcess = new Process(sourceProcess.pid);
     if (event.data.nextPid && newProcess.pid !== event.data.nextPid) {
       throw new Error(`spawn() expected pid ${event.data.nextPid} but got ${newProcess.pid}, race condition detected?`);
     }
 
-    newProcess.exec(argv, env);
+    newProcess.exec(argv, env, opts);
   } else if (event.data.cmd === 'setproctitle') {
     const sourceProcess = Process.getFromSource(event.source);
 
