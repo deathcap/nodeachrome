@@ -1,6 +1,7 @@
 'use strict';
 
 const Writable = require('stream').Writable;
+const Readable = require('stream').Readable;
 
 // Standard output stream for the browser
 // Inspired by https://github.com/kumavis/browser-stdout which uses console.log()
@@ -41,26 +42,56 @@ class RedirUnixStdout extends Writable {
   _write(chunks, encoding, cb) {
     const output = chunks.toString ? chunks.toString() : chunks;
     console.log('REDIR STDOUT', this.toUnix, output);
-    const syscall = require('./syscall').syscall;
-
     const sendNative = require('./native-proxy');
+
     sendNative('unix.stdout', [this.toUnix,
         process.pid, // TODO: secure process.pid? (have kernel set it instead of userland?) not clear if needed
         output], cb);
   }
 }
 
+class RedirParentStdout extends Writable {
+  constructor(parentPid) {
+    super();
+    this.parentPid = parentPid;
+  }
+
+  _write(chunks, encoding, cb) {
+    const output = chunks.toString ? chunks.toString() : chunks;
+
+    const syscall = require('./syscall').syscall;
+    syscall({cmd: 'stdout', output, parentPid: this.parentPid});
+  }
+}
+
+class RedirChildStdin extends Readable {
+  constructor() {
+    super();
+  }
+
+  _read(size) {
+  }
+}
+
+window.addEventListener('message', (event) => {
+  if (event.data.cmd === 'stdin') {
+    const input = event.data.input;
+
+    console.log('got stdin',event.data);
+
+    process.stdin.push(input);
+  }
+});
+
 // set in _start, if accesses here is too early
 process.stdout = null;
 process.stderr = null;
 
-// TODO: real stream stdin
-// this is enough for browserify_cli to not choke
-process.stdin = {
-  isTTY: false,
-};
+process.stdin = new RedirChildStdin();
+process.stdin.isTTY = false; // required for browserify_cli to not choke
 
 module.exports = {
   HtmlStdout,
   RedirUnixStdout,
+  RedirParentStdout,
 };

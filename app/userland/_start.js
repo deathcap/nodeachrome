@@ -2,7 +2,7 @@
 
 // Process initialization
 
-const {HtmlStdout, RedirUnixStdout} = require('./stdout');
+const {HtmlStdout, RedirUnixStdout, RedirParentStdout} = require('./stdout');
 const tee = require('tee');
 
 // Save kernel data for syscall
@@ -40,6 +40,17 @@ window.addEventListener('message', (event) => {
         process.stdout = tee(process.stdout, new RedirUnixStdout(event.data.opts.unixID));
         //process.stderr = tee(process.stderr, new RedirUnixStdout(event.data.opts.unixID)); // TODO: should redirect stderr too? probably, but need to differentiate
       }
+      if (event.data.opts.stdio) {
+        let stdio = event.data.opts.stdio;
+
+        if (stdio[0] === 'pipe') {
+          // TODO: stdin
+        } if (stdio[1] === 'pipe') {
+          process.stdout = tee(process.stdout, new RedirParentStdout(event.data.parentPid));
+        } else if (stdio[2] === 'pipe') {
+          process.stderr = tee(process.stderr, new RedirParentStdout(event.data.parentPid));
+        }
+      }
     }
 
 
@@ -60,6 +71,7 @@ window.addEventListener('message', (event) => {
       echo: () => require('./bin/echo'),
       kill: () => require('./bin/kill'),
       reboot: () => require('./bin/reboot'),
+      cat: () => require('./bin/cat'),
     };
 
     if (commands[process.argv[1]]) {
