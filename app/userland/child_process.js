@@ -65,9 +65,20 @@ function spawn(command, args=[], options={}) {
   const child = new ChildProcess(childPid);
 
   if (options.stdio) {
-    if (options.stdio[0] === 'pipe') child.stdin = new Writable();
-    if (options.stdio[1] === 'pipe') child.stdout = new Readable();
-    if (options.stdio[2] === 'pipe') child.stderr = new Readable();
+    if (options.stdio[0] === 'pipe') {
+      child.stdin = new Writable();
+    }
+
+    if (options.stdio[1] === 'pipe') {
+      child.stdout = new Readable();
+      child.stdout._read = () => {};
+    }
+
+    if (options.stdio[2] === 'pipe') {
+      child.stderr = new Readable();
+      child.stderr._read = () => {};
+    }
+
     child.stdio = [child.stdin, child.stdout, child.stderr];
   }
 
