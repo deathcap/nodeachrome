@@ -113,7 +113,9 @@ class Process {
     }
 
     if (TERMINATE_DEAD_PROCESSES) {
-      this.terminate(code);
+      process.nextTick(() => {
+        this.terminate(code);
+      });
     }
   }
 
@@ -156,8 +158,7 @@ window.addEventListener('message', (event) => {
     // Give some time to inspect the process before it cleans up
     // TODO: zombie reaping model instead, mark dead but allow getting exit code, visual, but no IPC, etc.
     // and have /bin/init, the parent of all processes, 'reap' the zombies after they are done or whatever
-    const terminateDelaySeconds = 5;
-    console.log(`Process ${sourceProcess.pid} exited (${code}), terminating in ${terminateDelaySeconds}s`);
+    console.log(`Process ${sourceProcess.pid} exited (${code})`);
 
     sourceProcess.markDead(code);
 
